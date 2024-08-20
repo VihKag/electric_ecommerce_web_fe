@@ -1,19 +1,19 @@
 import React, { Suspense } from "react";
-import AuthRoutes from "../route/auth";
 import { Outlet } from "react-router-dom";
 import { Spin } from "antd";
+import EHeader from "../components/header/EcommerceHeader";
 function AuthenLayout() {
   return (
     <>
-      <Suspense fallback={Spin}>
-        <div className="container mx-auto">
-          <header>
+      <Suspense fallback={<Spin/>}>
+        <div className="overflow-auto h-screen">
+          <header className="bg-background border-b shadow-sm sticky top-0 z-30 flex justify-center">
+            <EHeader/>
           </header>
-          <main className="my-40">
+          <main className="container mx-auto mt-8">
             <Outlet />
           </main>
           <footer>
-            <p>© 2024 Your Company</p>
           </footer>
         </div>
       </Suspense>
