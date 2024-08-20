@@ -17,4 +17,16 @@
     h5 {
       @apply text-lg font-medium;
     }
+    html, body {
+        @apply h-screen;
+      }
+    body{
+        @apply bg-gray-100 overflow-hidden;
+    }
+  }
+  @layer utilities {
+    .full-height {
+      height: 100vh;
+      min-height: 100vh;
+    }
   }
