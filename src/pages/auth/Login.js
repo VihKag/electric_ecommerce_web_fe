@@ -1,13 +1,23 @@
-import { faEyeSlash, faUser } from "@fortawesome/free-regular-svg-icons";
+import { faEye, faEyeSlash, faUser } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, {useState} from "react";
 import { Link } from "react-router-dom";
-import LogoGG from "../../assets/icon/logoGG.png"
+import LogoGG from "../../assets/icon/logoGG.png";
+import LogoShop from "../../assets/image/electric.jpg";
+
 function Login() {
+  const [frmLogin, setFrmLogin] = useState({
+    username: "",
+    Password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   return (
     <>
-      <div className="mx-auto my-4">
-        <img className="mx-auto w-max" src="" alt="Logo web"/>
+      <div className="mx-auto my-6">
+        <img className="mx-auto w-32 h-32 rounded-full" src={LogoShop} alt="Logo web" />
         <h2 className="mx-auto w-max">Đăng nhập</h2>
       </div>
       <form className="max-w-[700px] min-w-[280px] mx-auto">
@@ -20,7 +30,6 @@ function Login() {
               type="text"
               placeholder="Nhập tài khoản"
               required
-              
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
             />
             <span className="absolute right-4 top-4">
@@ -29,13 +38,13 @@ function Login() {
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-4">
           <label className="mb-2.5 block font-medium text-black">
             Mật khẩu
           </label>
           <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               autoComplete="on"
@@ -44,10 +53,15 @@ function Login() {
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
             />
             <span className="absolute right-4 top-4 cursor-pointer">
-              <FontAwesomeIcon icon={faEyeSlash} className="text-gray-400" />
+              <FontAwesomeIcon onClick={togglePasswordVisibility} icon={showPassword ? faEye: faEyeSlash} className="text-gray-400" id="icon-password" />
             </span>
           </div>
+          <div className="text-secondary m-2 justify-end flex">
+            <Link to="/restore-password">quên mật khẩu?</Link>
+          </div>
         </div>
+
+
 
         <div className="mb-5">
           <input
@@ -59,7 +73,7 @@ function Login() {
 
         <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 font-bold hover:bg-opacity-50">
           <span>
-            <img src={LogoGG} alt="logo google" className="w-6 h-6"/>
+            <img src={LogoGG} alt="logo google" className="w-6 h-6" />
           </span>
           Đăng nhập với Google
         </button>
