@@ -1,11 +1,13 @@
-import React, { lazy } from "react";
+import React, { lazy, useState } from "react";
 import { Button, Dropdown, Space } from "antd";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBars,
   faCartShopping,
   faHeart,
   faMountain,
+  faSignIn,
 } from "@fortawesome/free-solid-svg-icons";
 import avatar from "../../assets/image/default_avatar.jpg";
 const items = [
@@ -29,13 +31,21 @@ const items = [
     key: "4",
   },
 ];
-function Header() {
+
+
+
+function EHeader() {
+  const [authen, setAuthen] = useState(false);
   return (
     <>
       <div className="container px-4 md:px-6 flex items-center h-14 md:h-16">
         <Link href="#" className="mr-4 md:mr-6">
           <FontAwesomeIcon icon={faMountain} className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
+          <span className="whitespace-nowrap ml-1">Shop Name</span>
+        </Link>
+        <Link href="#" className="mr-4 md:mr-6">
+          <FontAwesomeIcon icon={faBars} className="h-6 w-6" />
+          <span className="whitespace-nowrap p-1">Danh mục</span>
         </Link>
         <div className="relative flex-1 max-w-md">
           <input
@@ -61,27 +71,42 @@ function Header() {
         <div className="ml-4 md:ml-6 flex items-center gap-2">
           <Button type="ghost" size="icon" className="rounded-full">
             <FontAwesomeIcon icon={faHeart} className="h-5 w-5" />
-            <span className="sr-only">Wishlist</span>
+            <span className="whitespace-nowrap">Wishlist</span>
           </Button>
           <Button type="ghost" size="icon" className="rounded-full">
             <FontAwesomeIcon icon={faCartShopping} className="h-5 w-5" />
-            <span className="sr-only">Cart</span>
+            <span className="whitespace-nowrap">Cart</span>
           </Button>
-          <Dropdown menu={{ items }} trigger={["click"]}>
-            <Button type="ghost" className="rounded-full">
-              <img
-                src={avatar}
-                alt="avatar"
-                width={32}
-                height={32}
-                className="rounded-full object-cover"
-              />
-              <span className="">Account</span>
-            </Button>
-          </Dropdown>
+          {authen ? (
+            <Dropdown menu={{ items }} trigger={["click"]}>
+              <Button type="ghost" className="rounded-full">
+                <img
+                  src={avatar}
+                  alt="avatar"
+                  width={32}
+                  height={32}
+                  className="rounded-full object-cover"
+                />
+                <span className="">Account</span>
+              </Button>
+            </Dropdown>
+          ) : (
+            <BtnLogin />
+          )}
         </div>
       </div>
     </>
   );
 }
-export default Header;
+export default EHeader;
+
+function BtnLogin() {
+  return (
+    <>
+      <Button type="ghost" size="icon" className="rounded-full">
+        <FontAwesomeIcon icon={faSignIn} className="h-5 w-5" />
+        <span className="whitespace-nowrap">Đăng nhập</span>
+      </Button>
+    </>
+  );
+}
