@@ -85,7 +85,7 @@ function Login() {
               </span>
             </div>
             <div className="text-secondary m-2 justify-end flex hover:text-hover">
-              <Link to="/restore-password">quên mật khẩu?</Link>
+              <Link to="/auth/restore-password">quên mật khẩu?</Link>
             </div>
           </div>
           <div>
@@ -99,7 +99,7 @@ function Login() {
           <div className="mt-6 text-center">
             <p>
               Bạn chưa có tài khoản?{" "}
-              <Link to="/register" className="text-blue-500 font-bold">
+              <Link to="/auth/register" className="hover:text-blue-500 text-primary font-bold">
                 Đăng ký
               </Link>
             </p>

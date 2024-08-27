@@ -1,12 +1,11 @@
 import React from "react";
-import LogoShop from "../../assets/image/electric.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useNavigation } from "react-router-dom";
 export default function RestorePassword() {
   const navigate = useNavigate();
   const handleBack = () => {
-    navigate("/login");
+    navigate("/auth/login");
   };
   return (
     <>
@@ -18,11 +17,6 @@ export default function RestorePassword() {
           >
             <FontAwesomeIcon icon={faChevronLeft} />
           </div>
-          <img
-            className="mx-auto w-32 h-32 rounded-full"
-            src={LogoShop}
-            alt="Logo web"
-          />
           <h2 className="mx-auto w-max">Quên mật khẩu</h2>
         </div>
         <form>

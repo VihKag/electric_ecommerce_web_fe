@@ -136,7 +136,7 @@ function Register() {
           <div className="mt-6 text-center">
             <p>
               Bạn đã có tài khoản?{" "}
-              <Link to="/login" className="text-blue-500 font-bold">
+              <Link to="/auth/login" className="hover:text-blue-500 text-primary font-bold">
                 Đăng nhập
               </Link>
             </p>
