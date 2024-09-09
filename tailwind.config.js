@@ -2,12 +2,18 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "./index.html"],
   theme: {
+    container:{
+      center: true,
+    },
     extend: {
+      screens: {
+        xs: '540px',
+      },
       colors: {
-        primary: '#007BFF',
+        primary: '#DB3022',
         secondary: '#6C757D',
         background: '#FFFFFF',
-        text: '#212529',
+        text: '#444',
         accent: '#28A745',
         border: '#DEE2E6',
         hover: '#0056B3',
@@ -34,6 +40,9 @@ module.exports = {
         'card': '0 2px 8px rgba(0, 0, 0, 0.1)', 
         'modal': '0 4px 16px rgba(0, 0, 0, 0.2)',
       },
+      textColor: {
+        'gray': '#343a40',
+      }
     },
   },
   variants: {
