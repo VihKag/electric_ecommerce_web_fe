@@ -25,7 +25,7 @@ const Carousel = ({ slides, autoPlayInterval = 3000 , indicators=true}) => {
   }, [currentIndex, autoPlayInterval]);
 
   return (
-    <div className="relative w-full h-2/3 xs:h-full mx-auto">
+    <div className="carousel relative w-full h-2/3 xs:h-full mx-auto">
       <div className={`overflow-hidden w-full relative shadow-lg ${indicators ? 'h-4/5 rounded-t-md' : 'h-full rounded-md'}`}>
         <img
           src={slides[currentIndex]}
@@ -36,13 +36,13 @@ const Carousel = ({ slides, autoPlayInterval = 3000 , indicators=true}) => {
 
       <button
         onClick={goToPrevious}
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 p-2 rounded-full bg-inherit focus:outline-none"
+        className="absolute top-1/2 hidden left-4 transform -translate-y-1/2 p-2 text-3xl rounded-full focus:outline-none bg-white shadow-sm"
       >
         &#10094;
       </button>
       <button
         onClick={goToNext}
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 p-2 rounded-full bg-inherit focus:outline-none"
+        className="absolute top-1/2 hidden right-4 transform -translate-y-1/2 p-2 text-3xl rounded-full focus:outline-none bg-white shadow-sm"
       >
         &#10095;
       </button>
