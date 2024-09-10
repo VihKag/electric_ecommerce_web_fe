@@ -1,28 +1,50 @@
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import React, { useRef } from "react";
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 export default function SwiperWrapper(props) {
   // Tạo refs cho các nút điều hướng
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
+  // Tạo các nhóm item để hiển thị trong mỗi slide
+  const groupedItems = [];
+  if (props.items.length > 15) {
+    for (let i = 0; i < props.items.length; i += 2) {
+      groupedItems.push(props.items.slice(i, i + 2)); // Mỗi nhóm gồm 2 item
+    }
+  } else {
+    groupedItems.push(...props.items.map(item => [item]));
+  }
+
   return (
     <div className="relative">
-      <div ref={nextRef} className="swiper-button-next bg-white px-4 py-2 rounded-full after:scale-50 shadow-lg border-2"></div>
-      <div ref={prevRef} className="swiper-button-prev bg-white px-4 py-2 rounded-full after:scale-50 shadow-lg border-2"></div>
-
+      <div
+        ref={nextRef}
+        className="swiper-button-next px-6 py-8 bg-white rounded-full scale-75 shadow-lg"
+      ></div>
+      <div
+        ref={prevRef}
+        className="swiper-button-prev px-6 py-8 bg-white rounded-full scale-75 shadow-lg"
+      >
+      </div>
 
       <Swiper
         modules={[Navigation]}
-        spaceBetween={4}
+        spaceBetween={0}
         slidesPerView={1}
         navigation={{
           nextEl: nextRef.current,
           prevEl: prevRef.current,
+        }}
+        onBeforeInit={(swiper) => {
+          // Thêm refs vào Swiper instance
+          swiper.params.navigation.nextEl = nextRef.current;
+          swiper.params.navigation.prevEl = prevRef.current;
         }}
         breakpoints={{
           480: {
@@ -41,13 +63,17 @@ export default function SwiperWrapper(props) {
         onSlideChange={() => console.log("slide change")}
         onSwiper={(swiper) => console.log(swiper)}
       >
-        {props.items.map((item, index) => {
-          return (
-            <>
-              <SwiperSlide className="p-1" key={index}>{item}</SwiperSlide>
-            </>
-          );
-        })}
+        {groupedItems.map((group, index) => (
+          <SwiperSlide key={index} className="pl-1 pr-2 py-2">
+            <div className="flex flex-col">
+              {group.map((item, i) => (
+                <div key={i} className="mb-2">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );
