@@ -1,0 +1,7 @@
+{
+    "files.autoGuessEncoding": true,
+    "explorer.compactFolders": false,
+    "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.preferredDarkColorTheme": "One Dark Pro",
+}

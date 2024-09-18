@@ -1,16 +1,16 @@
 import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { Spin } from "antd";
-import EHeader from "../components/header/EcommerceHeader";
-function EcommerceLayout() {
+import ClientHeader from "../components/header/ClientHeader";
+function ClientLayout() {
   return (
     <>
       <Suspense fallback={<Spin/>}>
         <div className="overflow-auto h-screen">
-          <header className="bg-background border-b shadow-sm sticky top-0 z-30 flex justify-center mb-2">
-            <EHeader/>
+          <header className="bg-sale border-b shadow-sm sticky top-0 z-30 flex justify-center mb-2">
+            <ClientHeader/>
           </header>
-          <main className="container mx-auto px-4">
+          <main>
             <Outlet />
           </main>
           <footer>
@@ -20,4 +20,4 @@ function EcommerceLayout() {
     </>
   );
 }
-export default EcommerceLayout;
+export default ClientLayout;
