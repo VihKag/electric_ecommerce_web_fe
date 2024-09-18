@@ -3,8 +3,6 @@ import { Navigation } from "swiper/modules";
 import React, { useRef } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 export default function SwiperWrapper(props) {
   // Tạo refs cho các nút điều hướng

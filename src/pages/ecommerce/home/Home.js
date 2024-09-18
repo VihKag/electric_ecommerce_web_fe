@@ -115,7 +115,7 @@ export default function Home() {
                 "Oneplus",
                 "Xem tất cả",
               ].map((brand) => (
-                <Button key={brand} variant="" className="px-2 text-sm py-1 bg-gray-100 font-normal">
+                <Button key={brand} type="text" className="px-2 text-sm py-1 bg-gray-100 font-normal border border-gray-300">
                   {brand}
                 </Button>
               ))}
@@ -126,9 +126,12 @@ export default function Home() {
             </div>
           </div>
         </div>
+        
         <div className="block-featured-product my-4">
-          <div className="">
-            <div className="flex flex-wrap gap-2 mb-4">
+          <div>
+            <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold text-text">Featured Products</h2>
+            <div className="flex flex-wrap gap-2">
               {[
                 "Apple",
                 "Samsung",
@@ -141,12 +144,13 @@ export default function Home() {
                 "Nokia",
                 "Infinix",
                 "Oneplus",
-                "Xem t\u1EA5t c\u1EA3",
+                "Xem tất cả",
               ].map((brand) => (
-                <Button key={brand} variant="outline" className="px-4 py-2">
+                <Button key={brand} type="text" className="px-2 text-sm py-1 bg-gray-100 font-normal border border-gray-300">
                   {brand}
                 </Button>
               ))}
+            </div>
             </div>
             <div>
               <SwiperWrapper items={featuredProducts} />

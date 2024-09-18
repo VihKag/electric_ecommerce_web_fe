@@ -59,3 +59,19 @@
 .carousel:hover button {
   display: block;
 }
+.swiper-slide img {
+  margin: 0 auto;
+  height: 100%;
+}
+.swiper-slide {
+  align-items: center;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+}
+.thumbs .relative:hover .swiper-button-next,
+.thumbs .relative:hover .swiper-button-prev {
+  display: flex;
+}

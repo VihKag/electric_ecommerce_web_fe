@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Menu, Pagination } from "antd";
 import { v4 as uuidv4 } from "uuid";
 import "antd/dist/reset.css";
 import { Link } from "react-router-dom";
@@ -15,6 +15,8 @@ import {
   faTag,
 } from "@fortawesome/free-solid-svg-icons";
 import useButton from "../../../hooks/useButton";
+import { product } from "../../../data";
+import ProductCard from "../../../components/card/ProductCard";
 
 const categories = [
   { name: "Chơi game", image: "/path/to/game-image.jpg" },
@@ -141,7 +143,7 @@ const filters = [
   },
 ];
 
-export default function Category() {
+export default function CategoryPage() {
   const [selectedItems, setSelectedItems] = useState([
     "Nhu cầu sử dụng: chơi game",
   ]);
@@ -177,7 +179,7 @@ export default function Category() {
                   handleClickFilter(item);
                 }}
                 type="text"
-                className={`mr-2 mb-2 ${
+                className={`mr-2 mb-2 hover:!text-red-500 ${
                   filterBtns.includes(item)
                     ? "border border-red-500 text-red-500"
                     : ""
@@ -232,6 +234,7 @@ export default function Category() {
                   type="text"
                   className={`
                   active:text-red-500 active:border-red-500 
+                  hover:!text-red-500
                   focus:border-red-500 focus:text-red-500 
                   border border-gray-300 bg-gray-100
                   ${isAnyItemSelected ? "border-red-500 text-red-500" : ""}
@@ -261,23 +264,23 @@ export default function Category() {
         )}
 
         <label className="text-lg text-text font-bold">Sắp xếp theo</label>
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-2">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-wrap space-x-2">
             <Button
               type="text"
-              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100"
+              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100 hover:!text-red-500"
             >
               <FontAwesomeIcon icon={faArrowDownWideShort} /> Giá Cao - Thấp
             </Button>
             <Button
               type="text"
-              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100"
+              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100 hover:!text-red-500"
             >
               <FontAwesomeIcon icon={faArrowDownShortWide} /> Giá Thấp - Cao
             </Button>
             <Button
               type="text"
-              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100"
+              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100 hover:!text-red-500"
             >
               <FontAwesomeIcon icon={faTag} /> Khuyến Mãi Hot
             </Button>
@@ -288,6 +291,28 @@ export default function Category() {
               <FontAwesomeIcon icon={faEye} /> Xem nhiều
             </Button>
           </div>
+        </div>
+      </div>
+
+      <div>
+        <div className="flex flex-wrap">
+          {product.map((item, index) => {
+            return (
+              <div key={index} className="lg:w-1/4 xl:w-1/5 sm:w-1/3 xs:w-1/2 w-full pr-2 py-1">
+                <ProductCard product={item} />
+              </div>
+            );
+          })}
+        </div>
+        <div className="my-6">
+          <Pagination
+            align="center"
+            responsive={true}
+            showSizeChanger
+            defaultCurrent={1}
+            total={400}
+            className="custom-pagination"
+          />
         </div>
       </div>
     </div>
