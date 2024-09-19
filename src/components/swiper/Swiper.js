@@ -11,7 +11,7 @@ export default function SwiperWrapper(props) {
 
   // Tạo các nhóm item để hiển thị trong mỗi slide
   const groupedItems = [];
-  if (props.items.length > 15) {
+  if (props.items.length > 15 && props.default !== true) {
     for (let i = 0; i < props.items.length; i += 2) {
       groupedItems.push(props.items.slice(i, i + 2)); // Mỗi nhóm gồm 2 item
     }
