@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { useRoutes } from 'react-router-dom';
 import ClientLayout from '../../layout/ClientLayout';
-import ProductPage from '../../pages/ecommerce/product/Product';
-import CategoryPage from '../../pages/ecommerce/category/Category';
-import Home from '../../pages/ecommerce/home/Home';
+import ProductPage from '../../pages/client/product/Product';
+import CategoryPage from '../../pages/client/category/Category';
+import Home from '../../pages/client/home/Home';
 const ClientRoutes = memo(() => {
   const routes = [
     {
