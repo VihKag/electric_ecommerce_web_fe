@@ -15,7 +15,7 @@ function ProductCard({ product }) {
           className="w-full h-48 object-cover mb-2"
         />
         <p className="text-sm font-semibold h-16">{product.title}</p>
-        <div className="flex items-center justify-between mt-2 mb-2">
+        <div className="flex items-center gap-4 mt-2 mb-2">
           <span className="text-red-600 text-base font-bold">
             {product.price}
           </span>

@@ -9,6 +9,7 @@ import ProductSummary from "./ProductSpecificationsSummary";
 import ProductInformation from "./ProductInformation";
 import ProductEvents from "./ProductEvents";
 import RecommendedProducts from "./RecommendedProduct";
+import ProductQuestions from "./ProductQuestions";
 const ProductPage = () => {
 
 
@@ -16,13 +17,13 @@ const ProductPage = () => {
     <div className="max-w-6xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{product[0].title}</h1>
 
-      <div className="flex flex-col md:flex-row gap-8 mb-4">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Left column */}
         <div className="md:w-3/5">
           <div className="bg-gray-200 rounded-lg mb-4">
             <ThumbsGallery />
           </div>
-          <div className="border rounded-lg p-2">
+          <div className="">
             <ProductInformation />
           </div>
         </div>
@@ -32,6 +33,11 @@ const ProductPage = () => {
           <ProductEvents product={product[0]}/>
           <ProductSummary product={product[0]} />
         </div>
+      </div>
+
+      <div className="my-4">
+        <div className="text-primary font-bold text-2xl mb-2 text-center">CÂU HỎI THƯỜNG GẶP</div>
+        <ProductQuestions/>
       </div>
 
       <div>
