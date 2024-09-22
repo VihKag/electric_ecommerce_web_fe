@@ -1,6 +1,6 @@
 import React from "react";
 import Carousel from "../../../components/carousel/Carousel";
-import { Badge, Button, Card, Dropdown } from "antd";
+import { Button} from "antd";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -99,7 +99,7 @@ export default function Home() {
         <div className="block-featured-product my-4">
           <div>
             <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold text-text">Featured Products</h2>
+            <h2 className="text-2xl font-semibold text-text min-w-fit">Featured Products</h2>
             <div className="flex flex-wrap gap-2">
               {[
                 "Apple",
@@ -130,7 +130,7 @@ export default function Home() {
         <div className="block-featured-product my-4">
           <div>
             <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold text-text">Featured Products</h2>
+            <h2 className="text-2xl font-semibold text-text min-w-fit">Featured Products</h2>
             <div className="flex flex-wrap gap-2">
               {[
                 "Apple",

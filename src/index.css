@@ -65,13 +65,16 @@
 }
 .swiper-slide {
   align-items: center;
-  background: #fff;
   display: flex;
   justify-content: center;
   overflow: hidden;
-  text-align: center;
 }
 .thumbs .relative:hover .swiper-button-next,
 .thumbs .relative:hover .swiper-button-prev {
   display: flex;
 }
+
+.ant-collapse-header{
+  @apply text-base font-semibold text-text hover:bg-red-50;
+}
+
