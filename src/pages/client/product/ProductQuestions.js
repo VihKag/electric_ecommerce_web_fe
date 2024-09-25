@@ -25,6 +25,6 @@ const ProductQuestions = () => {
   const onChange = (key) => {
     console.log(key);
   };
-  return <Collapse items={items} defaultActiveKey={['1']} onChange={onChange} />;
+  return <Collapse className='bg-white' items={items} defaultActiveKey={['1']} onChange={onChange} />;
 };
 export default ProductQuestions;
