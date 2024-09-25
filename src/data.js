@@ -1,13 +1,14 @@
 export const product = [
   {
+    id:1,
     discount: "1%",
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Samsung Galaxy S24 Ultra 12GB 256GB",
-    price: "27.990.000\u0111",
-    oldPrice: "33.990.000\u0111",
-    sMemberDiscount: "280.000\u0111",
-    installment: "600.000\u0111",
+    price: "27.990.000",
+    oldPrice: "33.990.000",
+    sMemberDiscount: "280.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -107,14 +108,15 @@ export const product = [
     },
   },
   {
+    id:2,
     discount: "2%",
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "iPhone 15 Pro Max 256GB | Ch\u00EDnh h\u00E3ng VN/A",
-    price: "29.390.000\u0111",
-    oldPrice: "34.990.000\u0111",
-    sMemberDiscount: "294.000\u0111",
-    installment: "600.000\u0111",
+    price: "29.390.000",
+    oldPrice: "34.990.000",
+    sMemberDiscount: "294.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -176,14 +178,15 @@ export const product = [
     ],
   },
   {
+    id:3,
     discount: "3%",
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "iPhone 13 128GB | Ch\u00EDnh h\u00E3ng VN/A",
-    price: "13.890.000\u0111",
-    oldPrice: "17.990.000\u0111",
-    sMemberDiscount: "139.000\u0111",
-    installment: "600.000\u0111",
+    price: "13.890.000",
+    oldPrice: "17.990.000",
+    sMemberDiscount: "139.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -245,14 +248,15 @@ export const product = [
     ],
   },
   {
+    id:4,
     discount: "4%",
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Samsung Galaxy M55 (12GB 256GB)",
-    price: "10.490.000\u0111",
-    oldPrice: "12.690.000\u0111",
-    sMemberDiscount: "105.000\u0111",
-    installment: "600.000\u0111",
+    price: "10.490.000",
+    oldPrice: "12.690.000",
+    sMemberDiscount: "105.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -314,14 +318,15 @@ export const product = [
     ],
   },
   {
+    id:5,
     discount: "5%",
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "iPhone 15 128GB | Ch\u00EDnh h\u00E3ng VN/A",
-    price: "19.590.000\u0111",
-    oldPrice: "22.990.000\u0111",
-    sMemberDiscount: "196.000\u0111",
-    installment: "600.000\u0111",
+    price: "19.590.000",
+    oldPrice: "22.990.000",
+    sMemberDiscount: "196.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -387,10 +392,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Xiaomi Redmi Note 13 Pro 4G",
-    price: "5.990.000\u0111",
-    oldPrice: "7.290.000\u0111",
-    sMemberDiscount: "60.000\u0111",
-    installment: "200.000\u0111",
+    price: "5.990.000",
+    oldPrice: "7.290.000",
+    sMemberDiscount: "60.000",
+    installment: "200.000",
     rating: 5,
     thumbs: [
       {
@@ -456,10 +461,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "iPhone 15 Plus 128GB | Ch\u00EDnh h\u00E3ng VN/A",
-    price: "22.590.000\u0111",
-    oldPrice: "25.990.000\u0111",
-    sMemberDiscount: "226.000\u0111",
-    installment: "600.000\u0111",
+    price: "22.590.000",
+    oldPrice: "25.990.000",
+    sMemberDiscount: "226.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -525,10 +530,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Xiaomi POCO M6 (6GB 128GB)",
-    price: "3.890.000\u0111",
-    oldPrice: "4.290.000\u0111",
-    sMemberDiscount: "37.000\u0111",
-    installment: "200.000\u0111",
+    price: "3.890.000",
+    oldPrice: "4.290.000",
+    sMemberDiscount: "37.000",
+    installment: "200.000",
     rating: 5,
     thumbs: [
       {
@@ -594,10 +599,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Xiaomi Redmi Note 13 (6GB 128GB)",
-    price: "4.390.000\u0111",
-    oldPrice: "4.890.000\u0111",
-    sMemberDiscount: "44.000\u0111",
-    installment: "200.000\u0111",
+    price: "4.390.000",
+    oldPrice: "4.890.000",
+    sMemberDiscount: "44.000",
+    installment: "200.000",
     rating: 5,
     thumbs: [
       {
@@ -663,10 +668,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Infinix Note 40 Pro 8GB 256GB",
-    price: "5.790.000\u0111",
-    oldPrice: "5.990.000\u0111",
-    sMemberDiscount: "58.000\u0111",
-    installment: "200.000\u0111",
+    price: "5.790.000",
+    oldPrice: "5.990.000",
+    sMemberDiscount: "58.000",
+    installment: "200.000",
     rating: 5,
     thumbs: [
       {
@@ -732,10 +737,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Samsung Galaxy S24 Ultra 12GB 256GB",
-    price: "27.990.000\u0111",
-    oldPrice: "33.990.000\u0111",
-    sMemberDiscount: "280.000\u0111",
-    installment: "600.000\u0111",
+    price: "27.990.000",
+    oldPrice: "33.990.000",
+    sMemberDiscount: "280.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -801,10 +806,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "iPhone 15 Pro Max 256GB | Ch\u00EDnh h\u00E3ng VN/A",
-    price: "29.390.000\u0111",
-    oldPrice: "34.990.000\u0111",
-    sMemberDiscount: "294.000\u0111",
-    installment: "600.000\u0111",
+    price: "29.390.000",
+    oldPrice: "34.990.000",
+    sMemberDiscount: "294.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -870,10 +875,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "iPhone 13 128GB | Ch\u00EDnh h\u00E3ng VN/A",
-    price: "13.890.000\u0111",
-    oldPrice: "17.990.000\u0111",
-    sMemberDiscount: "139.000\u0111",
-    installment: "600.000\u0111",
+    price: "13.890.000",
+    oldPrice: "17.990.000",
+    sMemberDiscount: "139.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -939,10 +944,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Samsung Galaxy M55 (12GB 256GB)",
-    price: "10.490.000\u0111",
-    oldPrice: "12.690.000\u0111",
-    sMemberDiscount: "105.000\u0111",
-    installment: "600.000\u0111",
+    price: "10.490.000",
+    oldPrice: "12.690.000",
+    sMemberDiscount: "105.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -1008,10 +1013,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "iPhone 13 128GB | Ch\u00EDnh h\u00E3ng VN/A",
-    price: "13.890.000\u0111",
-    oldPrice: "17.990.000\u0111",
-    sMemberDiscount: "139.000\u0111",
-    installment: "600.000\u0111",
+    price: "13.890.000",
+    oldPrice: "17.990.000",
+    sMemberDiscount: "139.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
@@ -1077,10 +1082,10 @@ export const product = [
     image:
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-6_2.png",
     title: "Samsung Galaxy M55 (12GB 256GB)",
-    price: "10.490.000\u0111",
-    oldPrice: "12.690.000\u0111",
-    sMemberDiscount: "105.000\u0111",
-    installment: "600.000\u0111",
+    price: "10.490.000",
+    oldPrice: "12.690.000",
+    sMemberDiscount: "105.000",
+    installment: "600.000",
     rating: 5,
     thumbs: [
       {
