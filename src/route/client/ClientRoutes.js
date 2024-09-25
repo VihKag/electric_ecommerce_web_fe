@@ -4,6 +4,7 @@ import ClientLayout from '../../layout/ClientLayout';
 import ProductPage from '../../pages/client/product/Product';
 import CategoryPage from '../../pages/client/category/Category';
 import Home from '../../pages/client/home/Home';
+import ShoppingCart from '../../pages/client/cart/ShoppingCart';
 const ClientRoutes = memo(() => {
   const routes = [
     {
@@ -20,6 +21,11 @@ const ClientRoutes = memo(() => {
         {
           path: 'category/:productid',
           element: <ProductPage />,
+
+        },
+        {
+          path: 'cart',
+          element: <ShoppingCart />,
 
         },
       ],
