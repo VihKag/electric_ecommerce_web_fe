@@ -10,6 +10,7 @@ import ProductInformation from "./ProductInformation";
 import ProductEvents from "./ProductEvents";
 import RecommendedProducts from "./RecommendedProduct";
 import ProductQuestions from "./ProductQuestions";
+import ProductDescription from "./ProductDescription";
 const ProductPage = () => {
 
 
@@ -35,7 +36,11 @@ const ProductPage = () => {
         </div>
       </div>
 
-      <div className="my-4">
+      <div>
+        <ProductDescription/>
+      </div>
+
+      <div className="my-4 border p-4 rounded-md">
         <div className="text-primary font-bold text-2xl mb-2 text-center">CÂU HỎI THƯỜNG GẶP</div>
         <ProductQuestions/>
       </div>
