@@ -59,7 +59,7 @@ const ProductDescription = () => {
       
     <div className='description-btn w-full h-full relative'>
     <Button 
-          variant="outline" 
+          variant="outline"                 
           className="flex items-center justify-center w-56 mx-auto p-4"
           onClick={() => setShowMore(!showMore)}
         >

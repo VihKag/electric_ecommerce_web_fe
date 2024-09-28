@@ -5,6 +5,7 @@ import ProductPage from '../../pages/client/product/Product';
 import CategoryPage from '../../pages/client/category/Category';
 import Home from '../../pages/client/home/Home';
 import ShoppingCart from '../../pages/client/cart/ShoppingCart';
+import Payment from '../../pages/client/payment/Payment';
 const ClientRoutes = memo(() => {
   const routes = [
     {
@@ -27,6 +28,10 @@ const ClientRoutes = memo(() => {
           path: 'cart',
           element: <ShoppingCart />,
 
+        },
+        {
+          path: 'payment',
+          element: <Payment />,
         },
       ],
     },

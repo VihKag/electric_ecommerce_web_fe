@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import "swiper/css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import ThumbsGallery from "../../../components/thumbs/Thumbs";
 import { product } from "../../../data";
 import ProductReviews from "./ProductPreviews";

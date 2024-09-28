@@ -10,11 +10,9 @@ function ClientLayout() {
           <header className="bg-sale border-b shadow-sm sticky top-0 z-30 flex justify-center mb-2">
             <ClientNav/>
           </header>
-          <main>
+          <main className="h-screen">
             <Outlet />
           </main>
-          <footer>
-          </footer>
         </div>
       </Suspense>
     </>
