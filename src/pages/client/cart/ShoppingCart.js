@@ -164,10 +164,13 @@ export default function ShoppingCart() {
       <div className="fixed bottom-0 w-full max-w-[780px] left-1/2 -translate-x-1/2 border rounded-lg flex items-center justify-between bg-white px-3 pb-4 pt-3">
         <p className="text-xl font-semibold">
           Tổng:{" "}
-          {subtotal.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })}
+          <span className={subtotal > 0 ? `text-primary` : null}>
+            {" "}
+            {subtotal.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+          </span>
         </p>
         <Button
           className="px-10 py-5 text-base font-semibold text-primary"

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function ProductCard({ product }) {
   return (
     <>
-      <Card bodyStyle={{padding: '24px 8px 8px'}} className="relative rounded-lg shadow-lg border-2">
+      <Card style={{ body: { padding: '24px 8px 8px' } }} className="relative rounded-lg shadow-lg border-2">
         <Badge variant="secondary" className="absolute top-2 left-2">
           Giảm {product.discount}
         </Badge>

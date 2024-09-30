@@ -200,6 +200,7 @@ export default function CategoryPage() {
         <div className="flex mb-6 max-w-[1200px] flex-wrap">
           {brands.map((brand, index) => (
             <Link
+              key={index}
               to={brand.name}
               className="border rounded-sm h-8 justify-center flex py-[2px] px-1 mb-2 mr-2 items-center"
             >
@@ -223,7 +224,7 @@ export default function CategoryPage() {
             return (
               <Dropdown
                 trigger={["click"]}
-                menu={CustomMenu(item.items)}
+                items={CustomMenu(item.items)}
                 key={index}
                 className="flex-grow max-w-fit"
               >

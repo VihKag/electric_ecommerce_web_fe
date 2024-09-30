@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Avatar, Badge, Button, Card, Menu } from "antd";
 import {
   HomeOutlined,
@@ -10,8 +10,13 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { Link, Outlet } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 export default function UserDashboard() {
+    const location = useLocation();
+    const locationPath = location.pathname;
+    useEffect(()=>{
+        console.log(locationPath);
+    });
   return (
     <div className="flex min-h-screen container pt-2">
       {/* Sidebar */}
