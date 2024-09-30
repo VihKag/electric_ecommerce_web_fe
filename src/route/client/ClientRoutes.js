@@ -6,13 +6,18 @@ import CategoryPage from '../../pages/client/category/Category';
 import Home from '../../pages/client/home/Home';
 import ShoppingCart from '../../pages/client/cart/ShoppingCart';
 import Payment from '../../pages/client/payment/Payment';
+import UserDashboard from '../../pages/client/user/UserDashboard';
+import UserProfile from '../../pages/client/user/profile/UserProfile';
+import Order from '../../pages/client/user/orders/Orders';
+import OrderDetails from '../../pages/client/user/orders/order_details/OrderDetail';
 const ClientRoutes = memo(() => {
   const routes = [
     {
+      path: '/',
       element: <ClientLayout />,
       children: [
         {
-          path: '',
+          index: true, 
           element: <Home />,
         },
         {
@@ -33,6 +38,37 @@ const ClientRoutes = memo(() => {
           path: 'payment',
           element: <Payment />,
         },
+        {
+          path: 'user',
+          element: <UserDashboard />,
+          children:[
+            {
+              path: 'profile',
+              element: <UserProfile/>,
+            },
+            {
+              path: 'order',
+              element: <Order />,
+            },
+            {
+              path: 'order/:orderId',
+              element: <OrderDetails />,
+            },
+            // {
+            //   path: 'addresses',
+            //   element: <Addresses />,
+            // },
+            // {
+            //   path: 'change-password',
+            //   element: <ChangePassword />,
+            // },
+            // {
+            //   path: 'logout',
+            //   element: <Logout />,
+            // },
+          ]
+        },
+        
       ],
     },
   ];
