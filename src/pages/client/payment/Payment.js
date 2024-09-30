@@ -26,9 +26,8 @@ export default function Payment() {
               </a>
             </p>
             <div>
-            <PaymentForm />
+              <PaymentForm />
             </div>
-            
           </div>
           <div className="w-full md:w-1/3 p-2 ">
             <div>
@@ -70,7 +69,7 @@ export default function Payment() {
             </div>
             <div className="flex justify-between items-center font-semibold text-lg">
               <span>Tổng cộng</span>
-              <span>{subtotal}</span>
+              <span className={subtotal > 0 ? `text-primary` : null}>{subtotal}</span>
             </div>
           </div>
         </div>

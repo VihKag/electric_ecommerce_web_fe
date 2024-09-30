@@ -10,6 +10,7 @@ import UserDashboard from '../../pages/client/user/UserDashboard';
 import UserProfile from '../../pages/client/user/profile/UserProfile';
 import Order from '../../pages/client/user/orders/Orders';
 import OrderDetails from '../../pages/client/user/orders/order_details/OrderDetail';
+import Contact from '../../pages/client/contact/Contact';
 const ClientRoutes = memo(() => {
   const routes = [
     {
@@ -32,6 +33,11 @@ const ClientRoutes = memo(() => {
         {
           path: 'cart',
           element: <ShoppingCart />,
+
+        },
+        {
+          path: 'conact',
+          element: <Contact />,
 
         },
         {
