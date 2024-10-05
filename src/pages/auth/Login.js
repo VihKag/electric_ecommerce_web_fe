@@ -1,23 +1,39 @@
 import { faEye, faEyeSlash, faUser } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import LogoGG from "../../assets/icon/logoGG.png";
 import LogoFb from "../../assets/icon/logoFb.png";
+import { useForm } from "react-hook-form";
 
 function Login() {
-  const [frmLogin, setFrmLogin] = useState({
-    username: "",
-    Password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue, // để khởi tạo giá trị
+    reset,    // để reset form
+  } = useForm({
+    defaultValues: {
+      username: "", // Giá trị mặc định của tài khoản
+      password: "", // Giá trị mặc định của mật khẩu
+    },
   });
+
   const [showPassword, setShowPassword] = useState(false);
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  const onSubmit = (data) => {
+    console.log("Submitted data:", data);
+    // Xử lý dữ liệu đăng nhập ở đây (gửi lên server hoặc API)
+  };
+
   return (
     <>
       <div className="mx-auto my-6">
-        {/* <img className="mx-auto w-32 h-32 rounded-full" src={LogoShop} alt="Logo web" /> */}
         <h2 className="mx-auto w-max">Đăng nhập</h2>
       </div>
 
@@ -44,7 +60,8 @@ function Login() {
           <hr className="w-full h-[1.5px] bg-gray-300" />
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Tài khoản */}
           <div className="mb-4">
             <label className="mb-2.5 block font-medium text-black">
               Tài khoản
@@ -53,15 +70,25 @@ function Login() {
               <input
                 type="text"
                 placeholder="Nhập tài khoản"
-                required
                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
+                {...register("username", { 
+                  required: "Tài khoản là bắt buộc", 
+                  minLength: {
+                    value: 4,
+                    message: "Tài khoản phải chứa ít nhất 4 ký tự",
+                  },
+                })}
               />
               <span className="absolute right-4 top-4">
                 <FontAwesomeIcon icon={faUser} className="text-gray-400" />
               </span>
+              {errors.username && (
+                <p className="text-red-500 mt-1">{errors.username.message}</p>
+              )}
             </div>
           </div>
 
+          {/* Mật khẩu */}
           <div className="mb-4">
             <label className="mb-2.5 block font-medium text-black">
               Mật khẩu
@@ -69,11 +96,15 @@ function Login() {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                name="password"
-                autoComplete="on"
-                placeholder="Nhập mât khẩu"
-                required
+                placeholder="Nhập mật khẩu"
                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
+                {...register("password", { 
+                  required: "Mật khẩu là bắt buộc",
+                  minLength: {
+                    value: 6,
+                    message: "Mật khẩu phải chứa ít nhất 6 ký tự",
+                  },
+                })}
               />
               <span className="absolute right-4 top-4 cursor-pointer">
                 <FontAwesomeIcon
@@ -83,11 +114,16 @@ function Login() {
                   id="icon-password"
                 />
               </span>
+              {errors.password && (
+                <p className="text-red-500 mt-1">{errors.password.message}</p>
+              )}
             </div>
-            <div className="text-secondary m-2 justify-end flex hover:text-hover">
-              <Link to="/auth/restore-password">quên mật khẩu?</Link>
+            <div className="text-secondary m-2 justify-end flex hover:text-primary">
+              <Link to="/auth/restore-password">Quên mật khẩu?</Link>
             </div>
           </div>
+
+          {/* Nút đăng nhập */}
           <div>
             <input
               type="submit"
@@ -99,7 +135,7 @@ function Login() {
           <div className="mt-6 text-center">
             <p>
               Bạn chưa có tài khoản?{" "}
-              <Link to="/auth/register" className="hover:text-blue-500 text-primary font-bold">
+              <Link to="/auth/register" className="text-primary font-bold">
                 Đăng ký
               </Link>
             </p>
@@ -109,4 +145,5 @@ function Login() {
     </>
   );
 }
+
 export default Login;
