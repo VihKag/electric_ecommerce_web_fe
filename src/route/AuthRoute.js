@@ -8,17 +8,17 @@ export const AuthenRoutes = memo(()=>{
   const routes = [
     {
       element: <AuthenLayout />,
-      Children:[
+      children:[
         {
-          path: "/auth/login",
+          path: "login",
           element: <Login />
         },
         {
-          path: "/auth/register",
+          path: "register",
           element: <Register /> 
         },
         {
-          path: "/auth/restore-password",
+          path: "restore-password",
           element: <RestorePass />
         }
       ]
