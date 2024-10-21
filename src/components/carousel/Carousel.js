@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-
+import {LeftOutlined, RightOutlined} from "@ant-design/icons";
 const Carousel = ({ slides, autoPlayInterval = 3000 , indicators=true}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -36,15 +36,15 @@ const Carousel = ({ slides, autoPlayInterval = 3000 , indicators=true}) => {
 
       <button
         onClick={goToPrevious}
-        className="absolute top-1/2 hidden left-4 transform -translate-y-1/2 p-2 text-3xl rounded-full focus:outline-none bg-white shadow-sm"
+        className="absolute top-1/2 hidden left-4 transform -translate-y-1/2 p-2 text-3xl rounded-full focus:outline-none bg-opacity-5 bg-white shadow-sm"
       >
-        &#10094;
+        <LeftOutlined />
       </button>
       <button
         onClick={goToNext}
-        className="absolute top-1/2 hidden right-4 transform -translate-y-1/2 p-2 text-3xl rounded-full focus:outline-none bg-white shadow-sm"
+        className="absolute top-1/2 hidden right-4 transform -translate-y-1/2 p-2 text-3xl rounded-full focus:outline-none bg-opacity-5 bg-white shadow-sm"
       >
-        &#10095;
+        <RightOutlined />
       </button>
 
       {indicators &&
