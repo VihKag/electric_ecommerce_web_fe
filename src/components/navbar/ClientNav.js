@@ -1,39 +1,68 @@
-import React, { lazy, useState } from "react";
-import { Button, Dropdown, Space } from "antd";
+import React, {useEffect, useState } from "react";
+import { Button, Dropdown, Menu} from "antd";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBars,
   faCartShopping,
   faHeart,
   faMountain,
   faSignIn,
 } from "@fortawesome/free-solid-svg-icons";
 import avatar from "../../assets/image/default_avatar.jpg";
-const items = [
-  {
-    label: <Link to="/user">Tài khoản</Link>,
-    key: "0",
-  },
-  {
-    label: <Link to="/orders">Đơn hàng</Link>,
-    key: "1",
-  },
-  {
-    label: <Link to="/setting">Cài đặt</Link>,
-    key: "3",
-  },
-  {
-    type: "divider",
-  },
-  {
-    label: <Link to="/login">Logout</Link>,
-    key: "4",
-  },
-];
-
+import { useDispatch, useSelector } from "react-redux";
+import {jwtDecode} from 'jwt-decode';
+import { authJwtAsync } from "../../redux/slices/authSlice";
 function ClientNav() {
-  const [authen, setAuthen] = useState(false);
+  const menu = (
+    <Menu
+      items={[
+        {
+          label: <Link to="/user">Tài khoản</Link>,
+          key: "0",
+        },
+        {
+          label: <Link to="user/orders">Đơn hàng</Link>,
+          key: "1",
+        },
+        {
+          label: <Link to="user/setting">Cài đặt</Link>,
+          key: "3",
+        },
+        {
+          type: "divider",
+        },
+        {
+          label: <Link to="/login">Logout</Link>,
+          key: "4",
+        },
+      ]}
+    />
+  );
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    const token = localStorage.getItem('access_token');
+    console.log("token: ",token);
+    if (token) {
+      try {
+        // Kiểm tra token hợp lệ (ví dụ: dùng jwtDecode để giải mã)
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        // Kiểm tra xem token đã hết hạn chưa
+        if (decodedToken.exp > currentTime) {
+          // Token hợp lệ, cập nhật trạng thái đăng nhập
+          dispatch(authJwtAsync(token));
+        } else {
+          // Token hết hạn, xóa token khỏi localStorage
+          localStorage.removeItem('token');
+        }
+      } catch (error) {
+        console.error('Invalid token', error);
+      }
+    } 
+  },[]);
+  const isAuth = useSelector((state)=> state.auth.isAuth);
+  const user = useSelector((state)=> state.auth.user);
   return (
     <div className="pl-1 flex items-center justify-between h-14 w-full max-w-[1200px]">
       <Link to="/" className="mr-4 md:mr-2 inline min-w-fit text-white">
@@ -84,8 +113,8 @@ function ClientNav() {
             Giỏ hàng
           </Link>
         </Button>
-        {authen ? (
-          <Dropdown items={{ items }} trigger={["click"]}>
+        {isAuth ? (
+          <Dropdown overlay={menu} trigger={["click"]}>
             <Button type="ghost" className="rounded-full text-white">
               <img
                 src={avatar}
@@ -101,7 +130,7 @@ function ClientNav() {
           <Button type="ghost" size="small" className="rounded-full text-white">
             <FontAwesomeIcon icon={faSignIn} className="h-5 w-5" />
             <Link
-              to="/login"
+              to="/auth/login"
               className="text-sm min-w-fit font-medium"
             >
               Đăng nhập
