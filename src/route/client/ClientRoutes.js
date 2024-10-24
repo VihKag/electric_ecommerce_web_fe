@@ -53,7 +53,7 @@ const ClientRoutes = memo(() => {
               element: <UserProfile/>,
             },
             {
-              path: 'order',
+              path: 'orders',
               element: <Order />,
             },
             {
