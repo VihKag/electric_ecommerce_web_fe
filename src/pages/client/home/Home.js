@@ -76,10 +76,10 @@ export default function Home() {
             <div className="cascading-menu flex flex-col">
               {menu.map((item, index) => {
                 return (
-                  <div className="flex justify-between items-center hover:cursor-pointer hover:bg-gray-200 px-4 py-2 ">
+                  <div key={index} className="flex justify-between items-center hover:cursor-pointer hover:bg-gray-200 px-4 py-2 ">
                     <Link
                       to={item.url}
-                      key={index}
+                      key={item.url}
                       className="hover:text-red-500 font-bold text-gray text-lg"
                     >
                       {item.title}
