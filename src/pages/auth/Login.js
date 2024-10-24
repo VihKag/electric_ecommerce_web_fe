@@ -1,36 +1,51 @@
 import { faEye, faEyeSlash, faUser } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoGG from "../../assets/icon/logoGG.png";
 import LogoFb from "../../assets/icon/logoFb.png";
 import { useForm } from "react-hook-form";
-
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { clientLoginAsync } from "../../redux/slices/authSlice";
+import { Spin } from "antd";
 function Login() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue, // để khởi tạo giá trị
-    reset,    // để reset form
-  } = useForm({
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors }} = useForm({
     defaultValues: {
-      username: "", // Giá trị mặc định của tài khoản
-      password: "", // Giá trị mặc định của mật khẩu
+      email: "",
+      password: "",
     },
   });
-
+  //use redux to login
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const onSubmit = (data) => {
-    console.log("Submitted data:", data);
-    // Xử lý dữ liệu đăng nhập ở đây (gửi lên server hoặc API)
+    dispatch(clientLoginAsync(data))
+    .unwrap() //  to extract the payload of a fulfilled action or to throw either the error
+    .then((result)=>{
+      if(result.status===200){
+        toast.success("Đăng nhập thành công!");
+        navigate('/');
+      }
+    })
+    .catch((error) => {
+      // error contains the payload from the rejected action
+      if (error.status === 404) {
+        toast.error("Tài khoản không tồn tại");
+      } else if (error.status === 401) {
+        toast.error("Sai mật khẩu");
+      } else {
+        toast.error("Đăng nhập thất bại");
+      }
+      console.log(error);
+    });
   };
-
   return (
     <>
       <div className="mx-auto my-6">
@@ -39,7 +54,10 @@ function Login() {
 
       <div className="max-w-[700px] min-w-[280px] mx-auto pb-10">
         <div className="flex items-center gap-4 justify-center">
-          <button className="flex w-48 h-14 items-center justify-center gap-3.5 rounded-lg border-2 border-stroke bg-gray p-4 font-bold hover:bg-opacity-50">
+          <button
+            onClick={() => toast.info("login")}
+            className="flex w-48 h-14 items-center justify-center gap-3.5 rounded-lg border-2 border-stroke bg-gray p-4 font-bold hover:bg-opacity-50"
+          >
             <span>
               <img src={LogoGG} alt="logo google" className="h-6" />
             </span>
@@ -71,19 +89,19 @@ function Login() {
                 type="text"
                 placeholder="Nhập tài khoản"
                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
-                {...register("username", { 
-                  required: "Tài khoản là bắt buộc", 
+                {...register("email", {
+                  required: "Tài khoản là bắt buộc",
                   minLength: {
-                    value: 4,
-                    message: "Tài khoản phải chứa ít nhất 4 ký tự",
+                    value: 6,
+                    message: "Tài khoản phải chứa ít nhất 6 ký tự",
                   },
                 })}
               />
               <span className="absolute right-4 top-4">
                 <FontAwesomeIcon icon={faUser} className="text-gray-400" />
               </span>
-              {errors.username && (
-                <p className="text-red-500 mt-1">{errors.username.message}</p>
+              {errors.email && (
+                <p className="text-red-500 mt-1">{errors.email.message}</p>
               )}
             </div>
           </div>
@@ -98,7 +116,7 @@ function Login() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Nhập mật khẩu"
                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
-                {...register("password", { 
+                {...register("password", {
                   required: "Mật khẩu là bắt buộc",
                   minLength: {
                     value: 6,
