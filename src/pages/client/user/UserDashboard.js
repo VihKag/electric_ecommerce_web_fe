@@ -25,8 +25,8 @@ export default function UserDashboard() {
           <Menu.Item key="home" icon={<HomeOutlined />}>
             <Link to="/user">Trang chủ</Link>
           </Menu.Item>
-          <Menu.Item key="order" icon={<HistoryOutlined />}>
-            <Link to="/user/order">Lịch sử mua hàng</Link>
+          <Menu.Item key="orders" icon={<HistoryOutlined />}>
+            <Link to="/user/orders">Lịch sử mua hàng</Link>
           </Menu.Item>
           <Menu.Item key="account" icon={<WalletOutlined />}>
             <Link to="/user/profile">Tài khoản của bạn</Link>
