@@ -3,7 +3,8 @@ import { Navigation } from "swiper/modules";
 import React, { useRef } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-
+import {LeftOutlined, RightOutlined} from "@ant-design/icons";
+import { Button } from "antd";
 export default function SwiperWrapper(props) {
   // Tạo refs cho các nút điều hướng
   const prevRef = useRef(null);
@@ -23,18 +24,22 @@ export default function SwiperWrapper(props) {
     <div className="relative">
       <div
         ref={nextRef}
-        className="swiper-button-next px-6 py-8 bg-opacity-50 bg-white scale-75 rounded-full shadow-lg"
-      ></div>
+        className="swiper-button-next text-black px-6 py-8 bg-opacity-50 bg-white scale-[0.65] rounded-full shadow-lg"
+      >
+        <LeftOutlined />
+      </div>
       <div
         ref={prevRef}
-        className="swiper-button-prev px-6 py-8 bg-opacity-50 bg-white scale-75 rounded-full shadow-lg"
+        className="swiper-button-prev text-black px-6 py-8 bg-opacity-50 bg-white scale-[0.65] rounded-full shadow-lg"
       >
+        <LeftOutlined />
       </div>
 
       <Swiper
         modules={[Navigation]}
         spaceBetween={0}
         slidesPerView={1}
+        color="black"
         navigation={{
           nextEl: nextRef.current,
           prevEl: prevRef.current,
@@ -65,7 +70,7 @@ export default function SwiperWrapper(props) {
           <SwiperSlide key={index} className="pl-1 pr-2 py-2">
             <div className="flex flex-col">
               {group.map((item, i) => (
-                <div key={i} className="mb-2">
+                <div key={i} className="mt-3">
                   {item}
                 </div>
               ))}
