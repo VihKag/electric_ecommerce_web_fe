@@ -14,6 +14,20 @@ import Contact from '../../pages/client/contact/Contact';
 import Login from '../../pages/auth/Login';
 import Register from '../../pages/auth/Register';
 import RestorePass from '../../pages/auth/RestorePass';
+import NotFound from '../../pages/NotFound';
+const categories = [
+  'tivi',
+  'laptop',
+  'dien-thoai',
+  'camera',
+  'pc',
+  'tablet',
+  'loa',
+  'tai-nghe',
+  'phu-kien',
+  'do-gia-dung',
+  'khuyen-mai',
+];
 const ClientRoutes = memo(() => {
   const routes = [
     {
@@ -25,14 +39,27 @@ const ClientRoutes = memo(() => {
           element: <Home />,
         },
         {
-          path: 'category',
-          element: <CategoryPage />,
+          path: "auth/login",
+          element: <Login />
         },
         {
-          path: 'category/:productid',
-          element: <ProductPage />,
-
+          path: "auth/register",
+          element: <Register /> 
         },
+        {
+          path: "aith/restore-password",
+          element: <RestorePass />
+        },
+        ...categories.map(category => ([
+          {
+            path: category, 
+            element: <CategoryPage />,  // Route chỉ có category
+          },
+          {
+            path: `${category}/:productid`, 
+            element: <ProductPage />,  // Route cho category và productid
+          }
+        ])).flat(),
         {
           path: 'cart',
           element: <ShoppingCart />,
@@ -75,21 +102,12 @@ const ClientRoutes = memo(() => {
               path: 'order/:orderId',
               element: <OrderDetails />,
             },
-            // {
-            //   path: 'addresses',
-            //   element: <Addresses />,
-            // },
-            // {
-            //   path: 'change-password',
-            //   element: <ChangePassword />,
-            // },
-            // {
-            //   path: 'logout',
-            //   element: <Logout />,
-            // },
           ]
         },
-        
+        {
+          path: '*',
+          element: <NotFound />, // Đảm bảo trang NotFound được render nếu không tìm thấy route
+        },
       ],
     },
   ];
