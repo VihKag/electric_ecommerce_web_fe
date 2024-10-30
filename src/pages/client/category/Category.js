@@ -4,7 +4,7 @@ import "swiper/css/navigation";
 import { Button, Dropdown, Menu, Pagination } from "antd";
 import { v4 as uuidv4 } from "uuid";
 import "antd/dist/reset.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowDownShortWide,
@@ -144,6 +144,19 @@ const filters = [
 ];
 
 export default function CategoryPage() {
+  const navigate = useNavigate();
+  const { category, productid } = useParams();
+
+  // Danh sách các giá trị hợp lệ cho category
+  const validCategories = ['laptop', 'phone', 'tablet']; // Cập nhật danh sách này tùy theo yêu cầu
+
+  // Kiểm tra nếu category không thuộc danh sách hợp lệ
+  if (!validCategories.includes(category)) {
+    console.log('path error');
+    navigate('/notfound');
+  }
+
+
   const [selectedItems, setSelectedItems] = useState([
     "Nhu cầu sử dụng: chơi game",
   ]);

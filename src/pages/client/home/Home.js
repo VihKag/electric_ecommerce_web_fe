@@ -27,8 +27,12 @@ const menu = [
     url: "/camera"
   },
   {
-    title: "Loa & Tai nghe",
-    url: "/loa-tai-nghe"
+    title: "Loa",
+    url: "/loa"
+  },
+  {
+    title: "Tai nghe",
+    url: "/tai-nghe"
   },
   {
     title: "PC",
@@ -45,10 +49,6 @@ const menu = [
   {
     title: "Đồ gia dụng",
     url: "/do-gia-dung"
-  },
-  {
-    title: "Hàng cũ",
-    url: "/hang-cu"
   },
   {
     title: "Khuyến mãi",
