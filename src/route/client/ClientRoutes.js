@@ -26,7 +26,6 @@ const categories = [
   'tai-nghe',
   'phu-kien',
   'do-gia-dung',
-  'khuyen-mai',
 ];
 const ClientRoutes = memo(() => {
   const routes = [
