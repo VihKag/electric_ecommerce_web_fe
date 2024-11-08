@@ -50,10 +50,6 @@ const menu = [
     title: "Đồ gia dụng",
     url: "/do-gia-dung"
   },
-  {
-    title: "Khuyến mãi",
-    url: "/khuyen-mai"
-  }
 ];
 
 
@@ -73,7 +69,7 @@ export default function Home() {
       <div className="max-w-[1200px] container">
         <div className="top-home sm:h-[480px]  mx-auto flex transition-all">
           <div className="main-menu w-1/5 hidden sm:block min-w-[180px] h-full rounded-md border shadow-lg duration-300">
-            <div className="cascading-menu flex flex-col">
+            <div className="cascading-menu flex flex-col gap-1">
               {menu.map((item, index) => {
                 return (
                   <div key={index} className="flex justify-between items-center hover:cursor-pointer hover:bg-gray-200 px-4 py-2 ">
