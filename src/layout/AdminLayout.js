@@ -11,9 +11,9 @@ import Icon, {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   BellTwoTone,
-  DashboardTwoTone
+  PoweroffOutlined
 } from "@ant-design/icons";
-
+import logoShop from "../assets/icon/logoShop.png";
 const { Header, Content, Footer, Sider } = Layout;
 
 export default function AdminLayout() {
@@ -47,23 +47,24 @@ export default function AdminLayout() {
         trigger={null}
         tri
         collapsible
-        collapsedWidth={60}
+        collapsedWidth={64}
         breakpoint="lg"
         collapsed={collapsed}
       >
-        <div className="demo-logo-vertical" />
-        <div className="logo" />
+        <div className="p-2 text-white font-bold text-xl inline-flex items-center gap-2 my-2 relative">
+          <span className="flex-none">
+            <img src={logoShop} alt="logo" className="size-12" />
+          </span>
+          <span className={collapsed ? `opacity-0 transition-opacity` :  `opacity-100 transition-opacity`}>
+            TeckZone
+          </span>
+        </div>
         <Menu
           theme="dark"
           className="text-base"
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={[
-            {
-              key: "0",
-              icon: <DashboardTwoTone />,
-              label: <Link to="/admin/products">Products</Link>,
-            },
             {
               key: "1",
               icon: <ShoppingOutlined />,
@@ -84,16 +85,22 @@ export default function AdminLayout() {
               icon: <FileOutlined />,
               label: <Link to="/admin/bills">Bills</Link>,
             },
+            {
+              key: "5",
+              icon: <PoweroffOutlined />,
+              label: <div>Dăng xuất</div>,
+            },
           ]}
         />
       </Sider>
       <Layout className="site-layout">
-        <Header className="site-layout-background px-0 flex bg-inherit items-center justify-between select-none">
+        <Header className="site-layout-background px-0 flex bg-inherit items-center justify-between select-none border-b-2">
           <Button
-            type="text"
+            type="link"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
+              color: "#000",
               fontSize: "16px",
               width: 64,
               height: 64,
@@ -101,9 +108,7 @@ export default function AdminLayout() {
           />
           <div className="px-6 flex items-center justify-center">
             <div className="mr-4 p-2" color="default" variant="text">
-              <div
-                className="flex items-center rounded-full py-2 px-2 hover:bg-gray-300 hover:cursor-pointer active:bg-gray-100 focus:bg-gray-300 selection:bg-gray-300"
-              >
+              <div className="flex items-center rounded-full py-2 px-2 hover:bg-gray-300 hover:cursor-pointer active:bg-gray-100 focus:bg-gray-300 selection:bg-gray-300">
                 <Badge count={100}>
                   <BellTwoTone className="text-3xl" />
                 </Badge>
@@ -119,8 +124,8 @@ export default function AdminLayout() {
             </Dropdown>
           </div>
         </Header>
-        <Content className="py-4 px-0">
-          <div className="p-6 min-h-[360px] site-layout-background">
+        <Content className="px-0">
+          <div className="px-6 py-2 min-h-[360px] site-layout-background">
             <Outlet />
           </div>
         </Content>
