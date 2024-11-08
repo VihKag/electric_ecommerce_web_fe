@@ -14,9 +14,9 @@ import logoShop from "../../assets/icon/logoShop.png";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { authJwtAsync } from "../../redux/slices/authSlice";
-function ClientNav() {
+function Header() {
   const navigate = useNavigate();
-  const items = [
+  const userItems = [
     {
       key: "0",
       label: <Link to="/user">Tài khoản</Link>,
@@ -36,6 +36,48 @@ function ClientNav() {
     {
       key: "6",
       label: <Link to="/login">Đăng xuất</Link>,
+    },
+  ];
+  const categoryItems = [
+    {
+      key: "cate1",
+      label: <Link to="/tivi">Tài khoản</Link>,
+    },
+    {
+      key: "cate2",
+      label: <Link to="/laptop">Đơn hàng</Link>,
+    },
+    {
+      key: "cate3",
+      label: <Link to="/dien-thoai">Cài đặt</Link>,
+    },
+    {
+      key: "cate4",
+      label: <Link to="/camera">Cài đặt</Link>,
+    },
+    {
+      key: "cate5",
+      label: <Link to="/pc">Đăng xuất</Link>,
+    },
+    {
+      key: "cate6",
+      label: <Link to="/tablet">Đơn hàng</Link>,
+    },
+    {
+      key: "cate7",
+      label: <Link to="/loa">Cài đặt</Link>,
+    },
+    {
+      key: "cate8",
+      label: <Link to="/tai-nghe">Cài đặt</Link>,
+    },
+    {
+      key: "cate9",
+      label: <Link to="/phu-kien">Đăng xuất</Link>,
+    },
+    {
+      key: "cate10",
+      label: <Link to="/do-gia-dung">Cài đặt</Link>,
     },
   ];
   const dispatch = useDispatch();
@@ -72,8 +114,20 @@ function ClientNav() {
         <img src={logoShop} alt="logo" className="size-12" />
         <span className="ml-1 text-2xl font-bold font-mono">TechZone</span>
       </div>
-      <div className="relative mx-2 w-full hidden xs:block">
-        <div className="flex bg-white items-center rounded-md">
+      <div>
+      <Dropdown
+            menu={{
+              items: categoryItems,
+            }}
+            trigger={["click"]}
+          >
+            <button className="rounded-full text-white min-w-fit flex items-center">
+              Danh mục
+            </button>
+          </Dropdown>
+      </div>
+      <div className="relative mx-2 w-full max-w-[540px] hidden xs:block">
+        <div className="flex bg-white items-center rounded-xl">
           <FontAwesomeIcon icon={faSearch} size="lg" className="mx-3" />
           <input
             type="search"
@@ -82,45 +136,51 @@ function ClientNav() {
           />
         </div>
       </div>
-      <nav className="hidden md:flex items-center justify-between text-white">
-        <Button type="ghost" size="small" className="rounded-full text-white">
-          <Link
-            to="/about"
-            className="text-sm min-w-fit font-medium hover:underline"
-          >
-            Giới thiệu
-          </Link>
-        </Button>
-        <Button type="ghost" size="small" className="rounded-full text-white">
-          <Link
-            to="/contact"
-            className="text-sm min-w-fit font-medium hover:underline"
-          >
-            Liên hệ
-          </Link>
-        </Button>
+      <nav className="hidden md:flex-1 min-w-fit md:flex md:items-center md:justify-around text-white mx-2 gap-2">
+
+          <button className="rounded-full text-white min-w-fit">
+            <Link
+              to="/about"
+              className="text-sm min-w-fit font-medium hover:underline inline"
+            >
+              Giới thiệu
+            </Link>
+          </button>
+
+          <button className="rounded-full text-white min-w-fit">
+            <Link
+              to="/contact"
+              className="text-sm min-w-fit font-medium hover:underline inline"
+            >
+              Liên hệ
+            </Link>
+          </button>
+
+          <button className="rounded-full text-white min-w-fit">
+            <Link
+              to="/wishList"
+              className="text-sm min-w-fit font-medium hover:underline inline"
+            >
+              Yêu thích
+            </Link>
+          </button>
+
       </nav>
       <div className="flex items-center">
-        <Button type="ghost" size="small" className="rounded-full text-white">
-          <FontAwesomeIcon icon={faHeart} className="size-5" />
-          <Link to="/wishList" className="text-sm min-w-fit font-medium">
-            Yêu thích
-          </Link>
-        </Button>
-        <Button type="ghost" size="small" className="rounded-full text-white">
+        <button className="rounded-full text-white min-w-fit flex items-center mr-4">
           <FontAwesomeIcon icon={faCartShopping} className="size-5" />
-          <Link to="/cart" className="text-sm min-w-fit font-medium">
+          <Link to="/cart" className="text-sm min-w-fit font-medium ml-2">
             Giỏ hàng
           </Link>
-        </Button>
+        </button>
         {isAuth ? (
           <Dropdown
             menu={{
-              items,
+              items:userItems,
             }}
             trigger={["click"]}
           >
-            <Button type="ghost" className="rounded-full text-white">
+            <button className="rounded-full text-white min-w-fit flex items-center">
               <div className="flex items-center">
                 <img
                   src={user.image}
@@ -131,18 +191,21 @@ function ClientNav() {
                 />
                 <span className="ml-2">{user.username}</span>
               </div>
-            </Button>
+            </button>
           </Dropdown>
         ) : (
-          <Button type="ghost" size="small" className="rounded-full text-white">
+          <button className="rounded-full text-white min-w-fit flex items-center">
             <FontAwesomeIcon icon={faSignIn} className="h-5 w-5" />
-            <Link to="/auth/login" className="text-sm min-w-fit font-medium">
+            <Link
+              to="/auth/login"
+              className="text-sm min-w-fit font-medium ml-2"
+            >
               Đăng nhập
             </Link>
-          </Button>
+          </button>
         )}
       </div>
     </div>
   );
 }
-export default ClientNav;
+export default Header;
