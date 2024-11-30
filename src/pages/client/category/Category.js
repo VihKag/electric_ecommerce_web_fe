@@ -1,334 +1,359 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Button, Dropdown, Menu, Pagination } from "antd";
-import { v4 as uuidv4 } from "uuid";
+import { Breadcrumb, Button, Card, List, Skeleton } from "antd";
 import "antd/dist/reset.css";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowDownShortWide,
   faArrowDownWideShort,
-  faChevronDown,
-  faCircleXmark,
   faEye,
   faTag,
 } from "@fortawesome/free-solid-svg-icons";
-import useButton from "../../../hooks/useButton";
-import { product } from "../../../data";
+import { HomeOutlined } from "@ant-design/icons";
 import ProductCard from "../../../components/card/ProductCard";
-
-const categories = [
-  { name: "Chơi game", image: "/path/to/game-image.jpg" },
-  { name: "Điện thoại gập", image: "/path/to/fold-image.jpg" },
-  { name: "Chụp ảnh đẹp", image: "/path/to/camera-image.jpg" },
-  { name: "Livestream", image: "/path/to/livestream-image.jpg" },
-  { name: "Dung lượng lớn", image: "/path/to/big-storage-image.jpg" },
-  { name: "Pin trâu", image: "/path/to/big-battery-image.jpg" },
-  { name: "Cấu hình cao", image: "/path/to/high-config-image.jpg" },
-  { name: "Điện thoại AI", image: "/path/to/ai-phone-image.jpg" },
-  { name: "Điện thoại phổ thông", image: "/path/to/regular-phone-image.jpg" },
-];
-const brands = [
-  {
-    name: "Apple",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_59.png",
-  },
-  {
-    name: "Samsung",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_60.png",
-  },
-  {
-    name: "Xiaomi",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_61.png",
-  },
-  {
-    name: "Oppo",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_62.png",
-  },
-  {
-    name: "Realme",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_63.png",
-  },
-  {
-    name: "Nokia",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_37_1.png",
-  },
-  {
-    name: "OnePlus",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_65.png",
-  },
-  {
-    name: "Infinix",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/i/n/infinixlogo.png",
-  },
-  {
-    name: "Asus",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_67.png",
-  },
-  {
-    name: "Vivo",
-    image:
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/t/_/t_i_xu_ng_67_.png",
-  },
-];
-
-const filters = [
-  {
-    key: 0,
-    filter: "Nhu cầu sử dụng",
-    items: [
-      "Chơi game",
-      "Điện thoại gập",
-      "Chụp ảnh đẹp",
-      "Livestream",
-      "Dung lượng lớn",
-      "Pin trâu",
-      "Cấu hình cao",
-      "Điện thoại AI",
-      "Điện thoại phổ thông",
-    ],
-  },
-  {
-    key: 1,
-    filter: "Chip xử lý",
-    items: ["Snapdragon", "Exynos", "MediaTek", "Apple A-series", "Kirin"],
-  },
-  {
-    key: 2,
-    filter: "Dung lượng RAM",
-    items: ["2GB", "4GB", "6GB", "8GB", "12GB", "16GB"],
-  },
-  {
-    key: 3,
-    filter: "Bộ nhớ trong",
-    items: ["32GB", "64GB", "128GB", "256GB", "512GB", "1TB"],
-  },
-  {
-    key: 4,
-    filter: "Loại điện thoại",
-    items: ["Điện thoại thông minh", "Điện thoại phổ thông", "Điện thoại gập"],
-  },
-  {
-    key: 5,
-    filter: "Tính năng đặc biệt",
-    items: [
-      "Chống nước",
-      "Chống bụi",
-      "Hỗ trợ 5G",
-      "Sạc nhanh",
-      "Cảm biến vân tay",
-      "Nhận diện khuôn mặt",
-    ],
-  },
-  {
-    key: 6,
-    filter: "Giá",
-    items: [
-      "Dưới 3 triệu",
-      "3 - 6 triệu",
-      "6 - 10 triệu",
-      "10 - 15 triệu",
-      "Trên 15 triệu",
-    ],
-  },
-];
+import { categoryService } from "../../../services/apiService";
 
 export default function CategoryPage() {
-  const navigate = useNavigate();
-  const { category, productid } = useParams();
+  const { categoryId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brand = searchParams.get("brand"); // Lấy giá trị của 'brand'
+  const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [filterSpecsOptions, setFilterSpecsOptions] = useState([]);
+  const [category, setCategory] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [loading, setLoading] = useState(true); // Trạng thái loading cho sản phẩm
+  const [openDropdown, setOpenDropdown] = useState(null); // Trạng thái lưu dropdown đang mở
 
-  // Danh sách các giá trị hợp lệ cho category
-  const validCategories = ['laptop', 'phone', 'tablet']; // Cập nhật danh sách này tùy theo yêu cầu
+  const toggleFilter = (key, value) => {
+    setSelectedFilters((prev) => {
+      const currentFilters = prev[key] || [];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter((v) => v !== value)
+        : [...currentFilters, value];
 
-  // Kiểm tra nếu category không thuộc danh sách hợp lệ
-  if (!validCategories.includes(category)) {
-    console.log('path error');
-    navigate('/notfound');
-  }
-
-
-  const [selectedItems, setSelectedItems] = useState([
-    "Nhu cầu sử dụng: chơi game",
-  ]);
-  const [filterBtns, setFilterBtns] = useState([]);
-  const { buttonRef, handleFocus, handleClick } = useButton();
-
-  const handleClickFilter = (id) => {
-    setFilterBtns((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+      return {
+        ...prev,
+        [key]: newFilters,
+      };
+    });
   };
 
-  const handleSelectedItem = (item) => {
-    setSelectedItems((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
-    );
-  };
-  const handleCancel = () => {
-    setSelectedItems([]);
+  useEffect(() => {
+    const params = new URLSearchParams();
+    Object.entries(selectedFilters).forEach(([key, values]) => {
+      if (Array.isArray(values)) {
+        // If the value is an array (filters like brand, specs), join them as a string
+        params.set(key, values.join(","));
+      } else {
+        // For non-array values (like sort)
+        params.set(key, values);
+      }
+    });
+    setSearchParams(params);
+  }, [selectedFilters, setSearchParams]);
+
+  const toggleDropdown = (key) => {
+    setOpenDropdown((prev) => (prev === key ? null : key));
   };
 
-  const CustomMenu = (items) => ({
-    items: [
-      {
-        key: "all-items",
-        label: (
-          <div className="flex flex-wrap mr-2 max-w-96 w-fit">
-            {items.map((item, index) => (
-              <Button
-                key={item}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClickFilter(item);
-                }}
-                type="text"
-                className={`mr-2 mb-2 hover:!text-red-500 ${
-                  filterBtns.includes(item)
-                    ? "border border-red-500 text-red-500"
-                    : ""
-                }`}
-              >
-                {item}
-              </Button>
-            ))}
-          </div>
-        ),
-      },
-    ],
-  });
+  const fetchCategoryData = useCallback(async () => {
+    try {
+      const [productRes, brandRes, categoryRes, filterRes] = await Promise.all([
+        categoryService.getProductByCategoryId(categoryId),
+        categoryService.getAllBrandsById(categoryId),
+        categoryService.getCategoryById(categoryId),
+        categoryService.getFilterOptions(categoryId),
+      ]);
+
+      setProducts(productRes.data.data);
+      setBrands(brandRes.data.data);
+      setCategory(categoryRes.data.data);
+      setFilterSpecsOptions(filterRes.data.data.filters);
+    } catch (error) {
+      console.error("Failed to fetch category data:", error);
+    }
+  }, [categoryId]);
+
+  const fetchFilteredProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = Object.fromEntries(searchParams.entries());
+      const filters = {};
+      for (const [key, value] of Object.entries(params)) {
+        if (
+          !["brand", "sort", "page", "limit", "minPrice", "maxPrice"].includes(
+            key
+          )
+        ) {
+          filters[key] = value.split(",");
+        }
+      }
+
+      const response = await categoryService.getProductByCategoryId(
+        categoryId,
+        {
+          params: {
+            ...filters,
+            sort: params.sort || null,
+            page: params.page || 1,
+            minPrice: params.minPrice || null,
+            maxPrice: params.maxPrice || null,
+            limit: params.limit || null,
+            brand: params.brand || null,
+          },
+        }
+      );
+      setProducts(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch filtered products:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryId, searchParams]);
+
+  const handleSortChange = (sortValue) => {
+    // Update the selectedFilters state with the new sort value
+    setSelectedFilters((prevFilters) => ({
+      ...prevFilters,
+      sort: sortValue,
+    }));
+  };
+  const handleBrandChange = (sortValue) => {
+    // Update the selectedFilters state with the new sort value
+    setSelectedFilters((prevFilters) => ({
+      ...prevFilters,
+      brand: sortValue,
+    }));
+  };
+
+  useEffect(() => {
+    fetchCategoryData();
+  }, [fetchCategoryData]);
+
+  useEffect(() => {
+    fetchFilteredProducts();
+  }, [fetchFilteredProducts]);
+
   return (
     <div className="max-w-[1200px] container">
+      <div className="mb-2">
+        <Breadcrumb 
+        className="text-base font-medium"
+        separator=">"
+          items={[
+            {
+              href: "/",
+              title: <HomeOutlined />,
+            },
+            {
+              href: `/category/${category._id}`,
+              title: (
+                <>
+                  <span>{category.name}</span>
+                </>
+              ),
+            },
+            {
+              title: brand,
+            },
+          ]}
+        />
+      </div>
       <div>
-        {/* Brand logos */}
-        <div className="flex mb-6 max-w-[1200px] flex-wrap">
-          {brands.map((brand, index) => (
-            <Link
-              key={index}
-              to={brand.name}
-              className="border rounded-sm h-8 justify-center flex py-[2px] px-1 mb-2 mr-2 items-center"
-            >
-              <img
-                src={brand.image}
-                alt={brand.name}
-                className="h-5 min-w-[98px]"
-              />
-            </Link>
-          ))}
-        </div>
-
-        <label className="text-lg text-text font-bold ">
-          Chọn theo tiêu chí
-        </label>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {filters.map((item, index) => {
-            const isAnyItemSelected = item.items.some((subItem) =>
-              filterBtns.includes(subItem)
-            );
-            return (
-              <Dropdown
-                trigger={["click"]}
-                items={CustomMenu(item.items)}
-                key={index}
-                className="flex-grow max-w-fit"
-              >
-                <Button
-                  ref={buttonRef}
-                  onFocus={handleFocus}
-                  onClick={handleClick}
-                  type="text"
-                  className={`
-                  active:text-red-500 active:border-red-500 
-                  hover:!text-red-500
-                  focus:border-red-500 focus:text-red-500 
-                  border border-gray-300 bg-gray-100
-                  ${isAnyItemSelected ? "border-red-500 text-red-500" : ""}
-                `}
-                >
-                  {item.filter} <FontAwesomeIcon icon={faChevronDown} />
-                </Button>
-              </Dropdown>
-            );
-          })}
-        </div>
-
-        {selectedItems && selectedItems.length > 0 && (
-          <>
-            <label className="text-lg text-text font-bold">Đang lọc theo</label>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {selectedItems.map((item, index) => (
-                <Button danger key={index}>
-                  <FontAwesomeIcon icon={faCircleXmark} /> {item}
-                </Button>
-              ))}
-              <Button danger key="del">
-                <FontAwesomeIcon icon={faCircleXmark} /> Bỏ tất cả
-              </Button>
+        {brands?.length > 0 && (
+          <div>
+            {/* Brand logos */}
+            <label className="text-lg text-text font-bold ">Thương hiệu</label>
+            <div className="flex mb-4 max-w-[1200px] flex-wrap gap-4">
+              {brands.map((brand, i) => {
+                return (
+                  <button
+                    key={brand._id}
+                    onClick={() =>handleBrandChange(brand.name)}
+                    className="flex items-center hover:text-gray-900"
+                  >
+                    {/* Thêm thẻ div với nền trắng bao quanh ảnh */}
+                    <div className="bg-white w-20 h-10 p-1 border rounded-md justify-center flex items-center">
+                      <img
+                        className="w-auto h-8 object-contain"
+                        src={brand.images}
+                        alt={brand.name}
+                      />
+                    </div>
+                  </button>
+                );
+              })}
             </div>
-          </>
+          </div>
+        )}
+
+        {filterSpecsOptions.length > 0 && (
+          <div>
+            <label className="text-lg text-text font-bold ">
+              Chọn theo tiêu chí
+            </label>
+            <div className="flex flex-wrap gap-4 my-2">
+              <div className="w-full">
+                <div className="flex flex-wrap gap-4">
+                  {filterSpecsOptions.map((filter) => (
+                    <div key={filter._id} className="relative">
+                      <button
+                        onClick={() => toggleDropdown(filter.key)}
+                        className={`px-3 py-1 text-sm bg-gray-100 border rounded-lg hover:bg-gray-50 flex items-center gap-2 ${
+                          selectedFilters[filter.key]?.length
+                            ? "ring-primary ring-1 text-primary bg-red-50"
+                            : ""
+                        }`}
+                      >
+                        {filter.key}
+                        <span className="text-xs">
+                          {selectedFilters[filter.key]?.length
+                            ? `(${selectedFilters[filter.key].length})`
+                            : ""}
+                        </span>
+                        <svg
+                          className={`w-4 h-4 transition-transform ${
+                            openDropdown === filter.key ? "rotate-180" : ""
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                      {openDropdown === filter.key && (
+                        <div className="absolute mt-2 w-60 bg-white border rounded-lg shadow-lg z-20">
+                          <div className="p-2 max-h-60 overflow-y-auto">
+                            {filter.values.map((value) => (
+                              <label
+                                key={value}
+                                className={`flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded ${
+                                  selectedFilters[filter.key]?.includes(value)
+                                    ? "bg-red-50 border border-red-500"
+                                    : ""
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    selectedFilters[filter.key]?.includes(
+                                      value
+                                    ) || false
+                                  }
+                                  onChange={() =>
+                                    toggleFilter(filter.key, value)
+                                  }
+                                  className="hidden"
+                                />
+                                <div
+                                  className={`w-4 h-4 border rounded flex items-center justify-center ${
+                                    selectedFilters[filter.key]?.includes(value)
+                                      ? "bg-red-500 border-red-500"
+                                      : "border-gray-300"
+                                  }`}
+                                >
+                                  {selectedFilters[filter.key]?.includes(
+                                    value
+                                  ) && (
+                                    <svg
+                                      className="w-3 h-3 text-white"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
+                                      />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span className="text-sm">{value}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         <label className="text-lg text-text font-bold">Sắp xếp theo</label>
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex flex-wrap space-x-2">
-            <Button
+        <div className="flex justify-between items-center my-2">
+          <div className="flex flex-wrap space-y-2 xs:space-y-0 xs:space-x-2">
+          <Button
               type="text"
-              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100 hover:!text-red-500"
+              className={`${
+                searchParams.get("sort") === "price_desc"
+                  ? "text-red-500 border-red-500"
+                  : ""
+              }`}
+              onClick={() => handleSortChange("price_desc")}
+              icon={<FontAwesomeIcon icon={faArrowDownWideShort} />}
             >
-              <FontAwesomeIcon icon={faArrowDownWideShort} /> Giá Cao - Thấp
+              Giá giảm dần
             </Button>
             <Button
               type="text"
-              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100 hover:!text-red-500"
+              className={`${
+                searchParams.get("sort") === "price_asc"
+                  ? "text-red-500 border-red-500"
+                  : ""
+              }`}
+              onClick={() => handleSortChange("price_asc")}
+              icon={<FontAwesomeIcon icon={faArrowDownShortWide} />}
             >
-              <FontAwesomeIcon icon={faArrowDownShortWide} /> Giá Thấp - Cao
-            </Button>
-            <Button
-              type="text"
-              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100 hover:!text-red-500"
-            >
-              <FontAwesomeIcon icon={faTag} /> Khuyến Mãi Hot
-            </Button>
-            <Button
-              type="text"
-              className="active:text-red-500 active:border-red-500 focus:border-red-500 focus:text-red-500 border border-gray-300 bg-gray-100"
-            >
-              <FontAwesomeIcon icon={faEye} /> Xem nhiều
+              Giá tăng dần
             </Button>
           </div>
         </div>
       </div>
 
-      <div>
-        <div className="flex flex-wrap">
-          {product.map((item, index) => {
-            return (
-              <div key={index} className="lg:w-1/4 xl:w-1/5 sm:w-1/3 xs:w-1/2 w-full pr-2 py-1">
-                <ProductCard product={item} />
-              </div>
-            );
-          })}
-        </div>
-        <div className="my-6">
-          <Pagination
-            align="center"
-            responsive={true}
-            showSizeChanger
-            defaultCurrent={1}
-            total={400}
-            className="custom-pagination"
-          />
-        </div>
+      <div className="mb-6">
+        {/* Component ProductList */}
+        <ProductList products={products} loading={loading} />
       </div>
     </div>
   );
 }
+const ProductList = ({ products, loading }) => {
+  return (
+    <div>
+      {loading ? (
+        <Skeleton active />
+      ) : (
+        <div className="flex flex-wrap">
+          {products.length === 0 ? (
+            <div className="w-full text-primary font-semibold text-center text-2xl text-gray-500 py-20">
+              Không có sản phẩm
+            </div>
+          ) : (
+            products.map((item, index) => (
+              <div
+                key={item._id || index}
+                className="lg:w-1/4 xl:w-1/5 sm:w-1/3 xs:w-1/2 w-full pr-2 py-1"
+              >
+                <ProductCard product={item} />
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
