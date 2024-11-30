@@ -1,7 +1,7 @@
 import { faEye, faEyeSlash, faUser } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoGG from "../../assets/icon/logoGG.png";
 import LogoFb from "../../assets/icon/logoFb.png";
 import { useForm } from "react-hook-form";
@@ -10,11 +10,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { clientLoginAsync } from "../../redux/slices/authSlice";
 import { Spin } from "antd";
 import { fetchCart } from "../../redux/slices/cartSlice";
-function Login() {
+function ChangePassword() {
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors }} = useForm({
+  const location = useLocation();
+  const emailState = location.state?.email ? location.state.email : null;
+  useEffect(() => {
+    if (!emailState) {
+      navigate("/errors");
+    }
+  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      email: "",
+      email: emailState,
       password: "",
     },
   });
@@ -28,60 +39,35 @@ function Login() {
 
   const onSubmit = (data) => {
     dispatch(clientLoginAsync(data))
-    .unwrap() //  to extract the payload of a fulfilled action or to throw either the error
-    .then((result)=>{
-      if(result.status===200){
-        toast.success("Đăng nhập thành công!");
-        const user = JSON.parse(localStorage.getItem("user"));
-        console.log(user);
-        dispatch(fetchCart(user.id));
-        navigate('/');
-      }
-    })
-    .catch((error) => {
-      // error contains the payload from the rejected action
-      if (error.status === 404) {
-        toast.error("Tài khoản không tồn tại");
-      } else if (error.status === 401) {
-        toast.error("Sai mật khẩu");
-      } else {
-        toast.error("Đăng nhập thất bại");
-      }
-      console.log(error);
-    });
+      .unwrap() //  to extract the payload of a fulfilled action or to throw either the error
+      .then((result) => {
+        if (result.status === 200) {
+          toast.success("Đổi mật khẩu thành công!");
+          const user = JSON.parse(localStorage.getItem("user"));
+          console.log(user);
+          dispatch(fetchCart(user.id));
+          navigate("/auth/login");
+        }
+      })
+      .catch((error) => {
+        // error contains the payload from the rejected action
+        if (error.status === 404) {
+          toast.error("Tài khoản không tồn tại");
+        } else if (error.status === 401) {
+          toast.error("Sai mật khẩu");
+        } else {
+          toast.error("Đăng nhập thất bại");
+        }
+        console.log(error);
+      });
   };
   return (
     <>
       <div className="mx-auto my-6">
-        <h2 className="mx-auto w-max">Đăng nhập</h2>
+        <h2 className="mx-auto w-max">Đổi mật khẩu</h2>
       </div>
 
       <div className="max-w-[700px] min-w-[280px] mx-auto pb-10">
-        <div className="flex items-center gap-4 justify-center">
-          <button
-            onClick={() => toast.info("login")}
-            className="flex w-48 h-14 items-center justify-center gap-3.5 rounded-lg border-2 border-stroke bg-gray p-4 font-bold hover:bg-opacity-50"
-          >
-            <span>
-              <img src={LogoGG} alt="logo google" className="h-6" />
-            </span>
-            Google
-          </button>
-
-          <button className="flex w-48 h-14 items-center justify-center rounded-lg border-2 border-stroke bg-gray p-4 font-bold hover:bg-opacity-50">
-            <span>
-              <img src={LogoFb} alt="logo google" className="h-6" />
-            </span>
-            Facebook
-          </button>
-        </div>
-
-        <div className="gap-2 flex items-center mx-auto w-3/5 my-8">
-          <hr className="w-full h-[1.5px] bg-gray-300" />
-          hoặc
-          <hr className="w-full h-[1.5px] bg-gray-300" />
-        </div>
-
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Tài khoản */}
           <div className="mb-4">
@@ -140,27 +126,15 @@ function Login() {
                 <p className="text-red-500 mt-1">{errors.password.message}</p>
               )}
             </div>
-            <div className="text-secondary m-2 justify-end flex hover:text-primary">
-              <Link to="/auth/restore-password">Quên mật khẩu?</Link>
-            </div>
           </div>
 
           {/* Nút đăng nhập */}
           <div>
             <input
               type="submit"
-              value="Đăng nhập"
+              value="Cập nhật mật khẩu"
               className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white font-bold transition hover:bg-opacity-90"
             />
-          </div>
-
-          <div className="mt-6 text-center">
-            <p>
-              Bạn chưa có tài khoản?{" "}
-              <Link to="/auth/register" className="text-primary font-bold">
-                Đăng ký
-              </Link>
-            </p>
           </div>
         </form>
       </div>
@@ -168,4 +142,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ChangePassword;
