@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authService } from "../../services/apiService";
-
 const initialState = {
   isAuth: false,
   user: null,
@@ -15,10 +14,10 @@ export const clientLoginAsync = createAsyncThunk(
     try {
       const response = await authService.clientLogin(credentials);
       console.log(response.data);
-      const { username, email, images, access_token } = response.data.data;
+      const { username, email, images, access_token, id, bonuspoint } = response.data.data;
       console.log(username, email, images);
       const status = response.status; // Lấy mã trạng thái HTTP
-      const user = { username: username, email, image: images };
+      const user = { username: username, email, image: images, id: id , bonuspoint: bonuspoint};
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
       console.log("access_token: ", access_token);
@@ -43,14 +42,14 @@ export const  authJwtAsync = createAsyncThunk(
     try {
       const response = await authService.authToken(token);
       console.log(response.data);
-      const { username, email, images, access_token } = response.data.data;
+      const { username, email, images, access_token, id, bonuspoint } = response.data.data;
       console.log(username, email, images);
       const status = response.status; // Lấy mã trạng thái HTTP
-      const user = { username: username, email, image: images };
-      localStorage.setItem("*access_token", access_token);
-      localStorage.setItem("*user", JSON.stringify(user));
-      console.log("*access_token: ", access_token);
-      console.log("*user: ", user);
+      const user = { username: username, email, image: images, id: id , bonuspoint: bonuspoint};
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("user", JSON.stringify(user));
+      console.log("access_token: ", access_token);
+      console.log("user: ", user);
       return {
         user,
         access_token,
