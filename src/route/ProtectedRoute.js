@@ -1,27 +1,39 @@
+import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
+import { authJwtAsync, logout } from "../redux/slices/authSlice";
 
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const [hasToastShown, setHasToastShown] = useState(false); // State để theo dõi việc hiển thị toast
+  const dispatch = useDispatch();
+  const { isAuth } = useSelector((state) => state.auth);
+  const token = localStorage.getItem('access_token');
 
   useEffect(() => {
-    // Khi người dùng chưa đăng nhập, hiển thị toast
-    if (!isAuthenticated && !hasToastShown) {
-      localStorage.removeItem("token");
-      toast.error('Vui lòng đăng nhập!');
-      setHasToastShown(true); // Đánh dấu toast đã hiển thị
+    if (token) {
+      try {
+        // Check token expiration
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        if (decodedToken.exp < currentTime) {
+          // Token expired, logout user
+          dispatch(logout());
+        } else {
+          // Validate token with backend
+          dispatch(authJwtAsync(token));
+        }
+      } catch (error) {
+        // Invalid token
+        dispatch(logout());
+      }
     }
-  }, [isAuthenticated, hasToastShown]); // Theo dõi isAuthenticated và hasToastShown
+  }, [token, dispatch]);
 
-  // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-  if (!isAuthenticated) {
-    return <Navigate to="/auth/login" />;
-  }
-
-  return children; // Nếu đã đăng nhập, render children
+  // If authenticated, render child routes
+  // If not authenticated, redirect to login
+  return token && isAuth ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

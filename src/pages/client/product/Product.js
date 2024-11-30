@@ -1,31 +1,56 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "swiper/css";
 import ThumbsGallery from "../../../components/thumbs/Thumbs";
-import { product } from "../../../data";
 import ProductReviews from "../../../components/product/ProductPreviews";
-import ProductInformation from "../../../components/product/ProductInformation";
-import RecommendedProducts from "../../../components/product/RecommendedProduct";
 import ProductQuestions from "../../../components/product/ProductQuestions";
 import ProductDescription from "../../../components/product/ProductDescription";
+import { Modal } from "antd";
+import { productService } from "../../../services/apiService";
+import { useNavigate, useParams } from "react-router-dom";
+import { formatCurrency } from "../../../utils/currencyUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal } from "antd";
+import SwiperWrapper from "../../../components/swiper/Swiper";
 const ProductPage = () => {
-  const [selectedVariant, setSelectedVariant] = useState(null);
-  const [selectedColor, setSelectedColor] = useState(null);
-
-  const handleVariantSelect = (variant) => {
-    setSelectedVariant(variant);
-    setSelectedColor(variant.color[0]); // Khi chọn variant, chọn màu đầu tiên của variant đó mặc định
-  };
-
-  // Hiển thị màu khi variant được chọn
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
-  };
-
+  const navigate = useNavigate();
+  const { productId } = useParams();
+  const [product, setProduct] = useState({});
+  const [details, setDetails] = useState([]);
+  const [relative, setRelative] = useState([]);
+  const [selectedMemory, setSelectedMemory] = useState();
+  const [selectedColor, setSelectedColor] = useState("");
+  const [variants, setVariants] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedVariant, setSelectedVariant] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const handleAddToCart = async () => {
+    if (!selectedVariant) {
+      alert("Vui lòng chọn bộ nhớ và màu sắc!");
+      return;
+    }
+
+    try {
+      const payload = {
+        user: "user_id_here", // Thay bằng ID người dùng thật
+        product: product._id,
+        quantity: quantity,
+        memory: selectedVariant.memory,
+        color: selectedVariant.color,
+      };
+
+      const response = "data"; // Thay bằng API thực tế
+
+      if (response.data.success) {
+        alert("Thêm vào giỏ hàng thành công!");
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Có lỗi xảy ra khi thêm vào giỏ hàng.");
+    }
+  };
   // Hàm để mở modal
   const showModal = () => {
     setIsModalVisible(true);
@@ -36,185 +61,246 @@ const ProductPage = () => {
     setIsModalVisible(false);
   };
 
+  const SpecsTable = () => {
+    return (
+      <div>
+        <div className="font-bold text-xl py-1">Thông số kỹ thuật</div>
+        <ul className="rounded-md border">
+          {details?.map((item, index) => {
+            return (
+              <li
+                key={index}
+                className="p-2 border-b w-full !flex items-center justify-between list-none odd:bg-gray-200"
+              >
+                <div className="font-medium text-gray-900 w-2/5">
+                  {item.details[0].key}
+                </div>
+                <div className="w-1/2">{item.details[0].value}</div>
+              </li>
+            );
+          })}
+        </ul>
+        <button
+          className="w-full p-1 border border-black rounded mt-2 hover:border-primary hover:text-primary"
+          onClick={showModal}
+        >
+          Xem đầy đủ thông số
+        </button>
+      </div>
+    );
+  };
+  const SpecsModal = () => {
+    return (
+      <ul className="max-h-[70vh] overflow-y-auto">
+        {details?.map((item) => {
+          return (
+            <div key={item?.category}>
+              <div className="font-bold text-lg py-2 px-1">{item.category}</div>
+              <div className="border rounded-md">
+                {item.details?.map((i) => {
+                  return (
+                    <li
+                      key={i.key}
+                      className="p-2 w-full !flex items-center justify-between list-none odd:bg-gray-200 "
+                    >
+                      <div className="font-medium text-gray-900 w-2/5">
+                        {i.key}
+                      </div>
+                      <div className="w-1/2">{i.value}</div>
+                    </li>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </ul>
+    );
+  };
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await productService.getProductById(productId);
+        const relativeProducts = await productService.getRelativeProducts(
+          productId
+        );
+        console.log(response.data.data);
+        console.log(relativeProducts.data.data);
+        setRelative(relativeProducts.data.data);
+        setProduct(response.data.data.product);
+        setDetails(response.data.data.details);
+        setVariants(response.data.data.variants);
+
+        // Mặc định chọn variant đầu tiên
+        const defaultMemory = response.data.data.variants[0];
+        if (defaultMemory) {
+          const defaultColor = defaultMemory.variants[0];
+          setSelectedMemory(defaultMemory.memory);
+          setSelectedColor(defaultColor.color);
+          setSelectedVariant({
+            memory: defaultMemory.memory,
+            color: defaultColor.color,
+            variant: defaultColor,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
   return (
     <div className="max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{product[0].title}</h1>
-
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Left column */}
         <div className="md:w-3/5">
           <div className="bg-gray-200 rounded-lg mb-4">
-            <ThumbsGallery />
-          </div>
-          <div className="">
-            <ProductInformation />
+            <ThumbsGallery thumbs={product?.images} />
           </div>
         </div>
 
         {/* Right column */}
-        <div className="md:w-1/3">
-
+        <div className="md:w-2/5">
+          <div className="text-2xl font-semibold mb-4">{product.name}</div>
           <>
-            <div className="flex items-center mb-4">
+            {/* Thương hiệu/mã */}
+            <div className="flex items-center mb-2">
               <div className="flex">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <FontAwesomeIcon
-                    key={star}
-                    icon={faStar}
-                    className="text-yellow-400 fill-current"
-                  />
-                ))}
+                <div className="font-semibold">Thương hiệu:</div>
+                <div
+                  onClick={() =>
+                    navigate(
+                      `/category/${product.category._id}?brand=${product.brand?._id}`
+                    )
+                  }
+                  className="ml-2 cursor-pointer text-primary"
+                >
+                  {product.brand?.name}
+                </div>
               </div>
-              <span className="ml-2">1 đánh giá</span>
-              <button className="ml-4 text-blue-600">+ So sánh</button>
+              <span className="mx-2 select-none">|</span>
+              {/* Đánh giá rating */}
+              <div className="flex items-center">
+                <div className="font-semibold">Đánh giá:</div>
+                <div className="ml-2 flex items-center">
+                  <h4 className="mr-1">{product.rating}</h4>
+                  <span>
+                    <FontAwesomeIcon icon={faStar} color="yellow" />
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Chọn variant */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              {product[0].variants.length > 0 &&
-                product[0].variants.map((variant, index) => (
-                  <button
-                    key={index}
-                    className={`p-2 border rounded text-xs ${
-                      selectedVariant === variant
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                    onClick={() => handleVariantSelect(variant)}
-                  >
-                    <div className="inline-block">{variant.storage}</div>
-                    <div className="font-bold">{variant.price}đ</div>
-                  </button>
-                ))}
-            </div>
-
-            {/* Chọn màu khi variant đã chọn */}
-            {selectedVariant && (
-              <div className="mb-4">
-                <h3 className="font-bold mb-2">Chọn màu</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {selectedVariant.color.map((color, index) => (
+            {/* variants sản phẩm */}
+            <div className="mb-2">
+              {/* Chọn bộ nhớ */}
+              <div className="mb-2">
+                <div className="flex gap-2">
+                  {variants.map((variant, index) => (
                     <button
                       key={index}
-                      className={`p-2 border rounded ${
-                        selectedColor === color
-                          ? "border-red-500"
-                          : "border-gray-300"
+                      className={`px-4 py-1 border rounded font-medium ${
+                        selectedMemory === variant.memory
+                          ? "ring-primary ring-1"
+                          : "bg-white text-black"
                       }`}
-                      onClick={() => handleColorSelect(color)}
+                      onClick={() => {
+                        setSelectedMemory(variant.memory);
+                        const defaultColor = variant.variants[0];
+                        setSelectedColor(defaultColor.color);
+                        setSelectedVariant({
+                          memory: variant.memory,
+                          color: defaultColor.color,
+                          variant: defaultColor,
+                        });
+                      }}
                     >
-                      <div className="mx-auto mb-1">
-                        <span>{color.colorName}</span>
-                      </div>
+                      {variant.memory}
                     </button>
                   ))}
                 </div>
               </div>
-            )}
 
-            {/* Giá tiền */}
-            <div className="bg-gray-100 p-4 rounded mb-4">
-              <div className="flex justify-between">
-                <span>
-                  {selectedVariant ? selectedVariant.price : product.price}đ
-                </span>
-                <span className="font-bold">{product.oldPrice}đ</span>
+              {/* Chọn màu sắc */}
+              <div>
+                <h3 className="text-lg font-semibold">Màu sắc</h3>
+                <div className="flex gap-2">
+                  {variants
+                    .find((variant) => variant.memory === selectedMemory)
+                    ?.variants.map((v, index) => (
+                      <button
+                        key={index}
+                        className={`px-4 py-1 border rounded flex flex-col ${
+                          selectedColor === v.color
+                            ? "ring-primary ring-1"
+                            : "bg-white text-black"
+                        }`}
+                        onClick={() => {
+                          setSelectedColor(v.color);
+                          setSelectedVariant({
+                            memory: selectedMemory,
+                            color: v.color,
+                            variant: v,
+                          });
+                        }}
+                      >
+                        <div className="font-medium">{v.color}</div>
+                        <div>{formatCurrency(v.price.initial)}</div>
+                      </button>
+                    ))}
+                </div>
               </div>
-              <div className="text-sm">Khi trả cũ lên đời</div>
             </div>
 
-            <button className="w-full bg-sale text-white py-2 rounded">
-              MUA NGAY
-            </button>
+            <div className="rounded mb-4 flex items-baseline gap-2">
+              <div className="text-sale font-semibold text-lg">
+                {formatCurrency(selectedVariant.variant?.price.initial)}
+              </div>
+              <span className="text-discount line-through font-semibold">
+                {formatCurrency(selectedVariant.variant?.price.discount)}
+              </span>
+            </div>
+
+            <div className="flex gap-2">
+              <button className="w-full bg-primary text-white py-2 rounded font-medium">
+                MUA NGAY
+              </button>
+              <button className="w-full bg-white text-primary border-primary border py-2 rounded font-medium">
+                THÊM VÀO GIỎ
+              </button>
+            </div>
           </>
-
-
-              <div className="specifications-summary text-text border p-2 mt-4">
-      <h2>Thông số kỹ thuật</h2>
-      {/* Tóm tắt thông số */}
-      <ul>
-        <li className="p-2 flex justify-between items-center">
-          <div>Màn hình</div>
-          <p>{product[0].Specifications.display.screen}</p>
-        </li>
-        <li className="p-2 flex justify-between items-center">
-          <div>Camera chính</div>
-          <p>{product[0].Specifications.camera.camera}</p>
-        </li>
-        <li className="p-2 flex justify-between items-center">
-          <div>Ram - Bộ nhớ</div>
-          <p>
-            {product[0].Specifications.storage.ram} -{" "}
-            {product[0].Specifications.storage.internal_storage}
-          </p>
-        </li>
-        <li className="p-2 flex justify-between items-center">
-          <div>Pin</div>
-          <p>{product[0].Specifications.battery.battery}</p>
-        </li>
-        <li className="p-2 flex justify-between items-center">
-          <div>Hệ điều hành</div>
-          <p>{product[0].Specifications.operating_system.android}</p>
-        </li>
-      </ul>
-
-      <Button className="w-full" onClick={showModal}>Xem đầy đủ thông số</Button>
-
-      <Modal
-        title="Thông số kỹ thuật đầy đủ"
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="close" onClick={handleCancel}>
-            Đóng
-          </Button>,
-        ]}
-      >
-        <div className="specifications-summary text-text">
-          <h2>Thông số kỹ thuật</h2>
-          {/* Tóm tắt thông số */}
-          <ul>
-            <li className="p-2 flex justify-between items-center">
-              <div>Màn hình</div>
-              <p>{product[0].Specifications.display.screen}</p>
-            </li>
-            <li className="p-2 flex justify-between items-center">
-              <div>Công nghệ màn hình</div>
-              <p>{product[0].Specifications.display.technology}</p>
-            </li>
-            <li className="p-2 flex justify-between items-center">
-              <div>Camera chính</div>
-              <p>{product[0].Specifications.camera.camera}</p>
-            </li>
-            <li className="p-2 flex justify-between items-center">
-              <div>Camera góc siêu rộng</div>
-              <p>{product[0].Specifications.camera.ultra_wide_camera}</p>
-            </li>
-            <li className="p-2 flex justify-between items-center">
-              <div>RAM</div>
-              <p>{product[0].Specifications.storage.ram}</p>
-            </li>
-            <li className="p-2 flex justify-between items-center">
-              <div>Bộ nhớ trong</div>
-              <p>{product[0].Specifications.storage.internal_storage}</p>
-            </li>
-            <li className="p-2 flex justify-between items-center">
-              <div>Pin</div>
-              <p>{product[0].Specifications.battery.battery}</p>
-            </li>
-            <li className="p-2 flex justify-between items-center">
-              <div>Sạc nhanh</div>
-              <p>{product[0].Specifications.battery.charging_technology}</p>
-            </li>
-          </ul>
-        </div>
-      </Modal>
-    </div>
         </div>
       </div>
 
-      <div>
-        <ProductDescription />
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="md:w-3/5">
+          <ProductDescription description={product.description} />
+        </div>
+
+        <div className="md:w-2/5 specifications-summary text-text border p-2 rounded-md">
+          <SpecsTable />
+
+          <Modal
+            title="Thông số kỹ thuật đầy đủ"
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={[
+              <button
+                key="close"
+                className="border border-gray-700 hover:border-primary hover:text-primary px-3 py-1 rounded-md"
+                onClick={handleCancel}
+              >
+                Đóng
+              </button>,
+            ]}
+          >
+            <SpecsModal />
+          </Modal>
+        </div>
       </div>
 
       <div className="my-4 border p-4 rounded-md">
@@ -225,7 +311,7 @@ const ProductPage = () => {
       </div>
 
       <div>
-        <RecommendedProducts />
+        <SwiperWrapper items={relative} className="my-8" />
       </div>
 
       <div>

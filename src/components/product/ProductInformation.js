@@ -1,6 +1,6 @@
-import { Input, Select } from "antd";
+import { Select } from "antd";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+
 
 export default function ProductInformation() {
   const [addressValue, setAddressValue] = useState([]);

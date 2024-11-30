@@ -119,7 +119,7 @@ export default function PaymentForm() {
         <Button
           type="primary"
           htmlType="submit"
-          className="w-full py-4 px-4 rounded-md bg-sale text-white"
+          className="w-full py-4 px-4 rounded-md bg-primary text-white"
         >
           Hoàn tất đơn hàng
         </Button>

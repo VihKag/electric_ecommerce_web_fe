@@ -5,11 +5,11 @@ export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="max-h-screen flex items-center justify-center bg-gray-100">
       <Result
         status="404"
         title="404"
-        subTitle="Sorry, the page you visited does not exist."
+        subTitle="Xin lỗi, Bạn đã truy cập vào trang không tồn tại."
         extra={[
           <Button
             type="primary"

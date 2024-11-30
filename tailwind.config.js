@@ -24,6 +24,7 @@ module.exports = {
         success: '#28A745',
         info: '#17A2B8',       
         footerBackground: '#343A40',
+        discount: '#707070',
       },
       spacing: {
         '18': '4.5rem', 

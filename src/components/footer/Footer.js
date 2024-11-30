@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function Footer() {
   return (
-    <div className="    text-gray-600 max-w-[1200px] mx-auto">
+    <div className="text-gray-600 max-w-[1200px] mx-auto">
       <div className="mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}

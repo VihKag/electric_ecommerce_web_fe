@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Avatar, Tabs, DatePicker, Tag, Button, Card } from "antd";
+import { formatCurrency } from "../../../../utils/currencyUtils";
 const { RangePicker } = DatePicker;
-
 const orderStatuses = [
-  "Tất cả",
+  "Hoàn thành",
   "Chờ xác nhận",
-  "Đã xác nhận",
   "Đang vận chuyển",
   "Đã giao hàng",
   "Đã hủy",
@@ -16,7 +15,7 @@ const orders = [
     id: 1,
     name: "TECNO SPARK Go 2024-Vàng",
     price: "1.950.000đ",
-    status: "Đã hủy",
+    status: "Hoàn thành",
     date: "29/09/2024 21:12",
     image: "/placeholder.svg?height=80&width=80",
   },
@@ -30,7 +29,10 @@ const orders = [
   },
 ];
 export default function UserOrder() {
-  const [activeTab, setActiveTab] = useState("Tất cả");
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const [activeTab, setActiveTab] = useState("Hoàn thành");
+
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const showOrderDetails = (order) => {
@@ -42,12 +44,12 @@ export default function UserOrder() {
       <Card className="mb-8">
         <div className="flex items-center">
           <div className="flex items-center">
-            <Avatar size={64} src="/placeholder.svg?height=64&width=64" />
+            <Avatar size={64} src={user.image} />
             <div className="ml-4">
               <h2 className="text-xl font-bold text-purple-700">
-                NGUYỄN VINH KHANG
+                {user.username}
               </h2>
-              <p className="text-gray-600">0327447104</p>
+              <p className="text-gray-600">{user.email}</p>
             </div>
           </div>
         </div>
@@ -95,7 +97,7 @@ export default function UserOrder() {
                         <div>
                           <h3 className="font-semibold">{order.name}</h3>
                           <p className="text-red-500 font-bold">
-                            {order.price}
+                            {formatCurrency(order.price)}
                           </p>
                           <Tag
                             color={order.status === "Đã hủy" ? "red" : "green"}

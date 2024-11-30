@@ -1,69 +1,74 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Carousel from "../../../components/carousel/Carousel";
-import { Button} from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import SwiperWrapper from "../../../components/swiper/Swiper";
-import ProductCard from "../../../components/card/ProductCard";
-import {product} from "../../../data";
+import { commonService, productService } from "../../../services/apiService";
+import { convertToSlug } from "../../../utils/convertUltils";
 const menu = [
   {
     title: "Điện thoại",
-    url: "/dien-thoai"
+    url: "/dien-thoai",
   },
   {
     title: "Tablet",
-    url: "/tablet"
+    url: "/tablet",
   },
   {
     title: "Laptop",
-    url: "/laptop"
+    url: "/laptop",
   },
   {
     title: "Camera",
-    url: "/camera"
+    url: "/camera",
   },
   {
     title: "Loa",
-    url: "/loa"
+    url: "/loa",
   },
   {
     title: "Tai nghe",
-    url: "/tai-nghe"
+    url: "/tai-nghe",
   },
   {
     title: "PC",
-    url: "/pc"
+    url: "/pc",
   },
   {
     title: "Tivi",
-    url: "/tivi"
+    url: "/tivi",
   },
   {
-    title: "Phụ kiện",
-    url: "/phu-kien"
-  },
-  {
-    title: "Đồ gia dụng",
-    url: "/do-gia-dung"
+    title: "Đồng hồ",
+    url: "/dong-ho",
   },
 ];
 
-
 export default function Home() {
-  const slides = [
-    "https://via.placeholder.com/600x400?text=Slide+1",
-    "https://via.placeholder.com/600x400?text=Slide+2",
-    "https://via.placeholder.com/600x400?text=Slide+3",
-    "https://via.placeholder.com/600x400?text=Slide+4",
-  ];
-  const featuredProducts = product.map((product, index) => (
-    <ProductCard key={index} product={product}/>
-  ));
+  const navigate = useNavigate();
+  const [productGroups, setProductGroups] = useState();
+  const [banners, setBanners] = useState();
+  
+  const fetchHome = async () => {
+    try {
+      const response = await productService.getHomePage();
+      const bannersResponse = await commonService.getBanners();
+      console.log("banners: ",bannersResponse.data.data);
+      setBanners(bannersResponse.data.data);
+      console.log("data home page:", response.data);
+      setProductGroups(response.data.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
+  useEffect(() => {
+    fetchHome();
+  }, []);
+  const handleClickMoreButton = (productGroup) => {
+    navigate(`category/${productGroup.category._id}`);
+  };
   return (
     <>
       <div className="max-w-[1200px] container">
@@ -72,7 +77,10 @@ export default function Home() {
             <div className="cascading-menu flex flex-col gap-1">
               {menu.map((item, index) => {
                 return (
-                  <div key={index} className="flex justify-between items-center hover:cursor-pointer hover:bg-gray-200 px-4 py-2 ">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center hover:cursor-pointer hover:bg-gray-200 px-4 py-2 "
+                  >
                     <Link
                       to={item.url}
                       key={item.url}
@@ -87,71 +95,47 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative slide-banner flex-1 ml-2 rounded-md h-full">
-            <Carousel slides={slides} autoPlayInterval={3000} />
+          <div className="relative slide-banner flex-1 sm:ml-2 rounded-md h-full">
+            <Carousel slides={banners} autoPlayInterval={3000} />
           </div>
         </div>
 
         <div className="block-featured-product my-4">
-          <div>
-            <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold text-text min-w-fit">Featured Products</h2>
-            <div className="flex flex-wrap gap-2">
-              {[
-                "Apple",
-                "Samsung",
-                "Xiaomi",
-                "OPPO",
-                "vivo",
-                "realme",
-                "ASUS",
-                "TECNO",
-                "Nokia",
-                "Infinix",
-                "Oneplus",
-                "Xem tất cả",
-              ].map((brand) => (
-                <Button key={brand} type="text" className="px-2 text-sm py-1 bg-gray-100 font-normal border border-gray-300">
-                  {brand}
-                </Button>
-              ))}
-            </div>
-            </div>
-            <div>
-              <SwiperWrapper items={featuredProducts} />
-            </div>
-          </div>
-        </div>
-        
-        <div className="block-featured-product my-4">
-          <div>
-            <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold text-text min-w-fit">Featured Products</h2>
-            <div className="flex flex-wrap gap-2">
-              {[
-                "Apple",
-                "Samsung",
-                "Xiaomi",
-                "OPPO",
-                "vivo",
-                "realme",
-                "ASUS",
-                "TECNO",
-                "Nokia",
-                "Infinix",
-                "Oneplus",
-                "Xem tất cả",
-              ].map((brand) => (
-                <Button key={brand} type="text" className="px-2 text-sm py-1 bg-gray-100 font-normal border border-gray-300">
-                  {brand}
-                </Button>
-              ))}
-            </div>
-            </div>
-            <div>
-              <SwiperWrapper items={featuredProducts} />
-            </div>
-          </div>
+          {productGroups?.map((productGroup, index) => {
+            return (
+              <div key={index} className="product-feature mt-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-center">
+                    {productGroup.category.name}
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {productGroup.brands.map((brand, index) => {
+                      return (
+                        <button
+                          key={index}
+                          className="px-2 text-sm py-1 bg-gray-100 font-normal border border-gray-300 rounded-md hover:bg-white"
+                          onClick={() =>
+                            navigate(
+                              `/category/${convertToSlug(productGroup.category._id)}?brand=${convertToSlug(brand.name)}`
+                            )
+                          }
+                        >
+                          {brand.name}
+                        </button>
+                      );
+                    })}
+                    <button
+                      onClick={() => handleClickMoreButton(productGroup)}
+                      className="px-2 text-sm py-1 bg-gray-100 font-normal border border-gray-300 rounded-md hover:bg-white"
+                    >
+                      Xem thêm
+                    </button>
+                  </div>
+                </div>
+                <SwiperWrapper items={productGroup.products} className="my-8" />
+              </div>
+            );
+          })}
         </div>
       </div>
     </>

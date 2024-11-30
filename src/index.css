@@ -48,30 +48,14 @@
     opacity: 1;
   }
 }
-
+*{
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
 .hover\:animate-blink:hover {
   animation: blink 1s infinite;
 }
 .hover\:fill-red:hover svg path {
   fill: red;
-}
-
-.carousel:hover button {
-  display: block;
-}
-.swiper-slide img {
-  margin: 0 auto;
-  height: 100%;
-}
-.swiper-slide {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-}
-.thumbs .relative:hover .swiper-button-next,
-.thumbs .relative:hover .swiper-button-prev {
-  display: flex;
 }
 
 .ant-collapse-header{
@@ -86,4 +70,13 @@
   height: 100%;
   pointer-events: none;
   background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.4) 15%, #fff);
+}
+::-webkit-scrollbar {
+  display: none;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
