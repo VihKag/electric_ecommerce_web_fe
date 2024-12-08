@@ -1,89 +1,106 @@
-import { faFacebook, faInstagram, faTiktok, faYoutube } from '@fortawesome/free-brands-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
+import {
+  faFacebook,
+  faInstagram,
+  faTiktok,
+  faYoutube,
+} from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <div className="text-gray-600 max-w-[1200px] mx-auto">
-      <div className="mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Giới thiệu</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-gray-900">Our Story</a></li>
-              <li><a href="#" className="hover:text-gray-900">Careers</a></li>
-              <li><a href="#" className="hover:text-gray-900">Press</a></li>
-            </ul>
-          </div>
-
-          {/* Customer Service */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-gray-900">Contact Us</a></li>
-              <li><a href="#" className="hover:text-gray-900">FAQs</a></li>
-              <li><a href="#" className="hover:text-gray-900">Shipping & Returns</a></li>
-            </ul>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-gray-900">New Arrivals</a></li>
-              <li><a href="#" className="hover:text-gray-900">Sale Items</a></li>
-              <li><a href="#" className="hover:text-gray-900">Gift Cards</a></li>
-            </ul>
-          </div>
-
-          {/* Newsletter Signup */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Stay Connected</h3>
-            <p className="mb-4">Subscribe to our newsletter for exclusive offers and updates.</p>
-            <form className="flex">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-grow px-4 py-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
+    <div className="max-w-[1200px] mx-auto px-4 pb-6 bg-slate-50 text-gray-300 py-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        {/* About Us */}
+        <div>
+          <h4 className="text-xl font-semibold mb-4">
+            Về chúng tôi
+          </h4>
+          <ul className="space-y-2">
+            <li>
+              <Link to="/our/about" >
+                Giới thiệu
+              </Link>
+            </li>
+            <li>
+              <Link to="/our/contact" >
+                Liên hệ
+              </Link>
+            </li>
+          </ul>
         </div>
 
-        {/* Social Media and Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex space-x-4 mb-4 md:mb-0">
-              <a href="#" className="text-gray-400 hover:text-gray-900">
-                <FontAwesomeIcon icon={faFacebook} className="h-6 w-6" />
-                <span className="sr-only">Facebook</span>
+        {/* Customer Service */}
+        <div>
+          <h4 className="text-xl font-semibold mb-4">
+            Dịch vụ khách hàng
+          </h4>
+          <ul className="space-y-2">
+            <li>
+              <Link to="/our/faq" >
+                Câu hỏi thường gặp (FAQ)
+              </Link>
+            </li>
+            <li>
+              <Link to="/our/shipping" >
+                Thông tin giao hàng
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Policies */}
+        <div>
+          <h4 className="text-xl font-semibold mb-4">Chính sách</h4>
+          <ul className="space-y-2">
+            <li>
+              <Link to="/our/terms" >
+                Điều khoản dịch vụ
+              </Link>
+            </li>
+            <li>
+              <Link to="/our/privacy" >
+                Chính sách bảo mật
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Connect with Us */}
+        <div>
+          <h4 className="text-xl font-semibold mb-4">
+            Kết nối với chúng tôi
+          </h4>
+          <ul className="space-x-2 flex">
+            <li>
+              <a
+                href="https://www.facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FontAwesomeIcon icon={faFacebook} size="xl"/>
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-900">
-                <FontAwesomeIcon icon={faInstagram} className="h-6 w-6" />
-                <span className="sr-only">Instagram</span>
+            </li>
+            <li>
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                
+              >
+                <FontAwesomeIcon icon={faInstagram} size="xl"/>
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-900">
-                <FontAwesomeIcon icon={faYoutube} className="h-6 w-6" />
-                <span className="sr-only">YouTube</span>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-gray-900">
-                <FontAwesomeIcon icon={faTiktok} className="h-6 w-6" />
-                <span className="sr-only">Tiktok</span>
-              </a>
-            </div>
-            <div className="text-sm">
-              &copy; {new Date().getFullYear()} Your E-commerce Store. All rights reserved.
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
       </div>
+
+      <div className="text-center mt-8">
+        <p className="text-sm text-gray-400">
+          © 2024 Cửa hàng điện tử. All rights reserved.
+        </p>
+      </div>
     </div>
-  )
+  );
 }

@@ -8,6 +8,7 @@ import {
   QuestionCircleOutlined,
   MessageOutlined,
   LogoutOutlined,
+  EnvironmentOutlined,
 } from "@ant-design/icons";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -40,6 +41,9 @@ export default function UserDashboard() {
           <Menu.Item key="account" icon={<WalletOutlined />}>
             <Link to="/user/profile">Tài khoản của bạn</Link>
           </Menu.Item>
+          <Menu.Item key="address" icon={<EnvironmentOutlined />}>
+            <Link to="/user/addresses">Sổ địa chỉ</Link>
+          </Menu.Item>
           <Menu.Item key="help" icon={<QuestionCircleOutlined />}>
             Hỗ trợ
           </Menu.Item>
@@ -51,36 +55,7 @@ export default function UserDashboard() {
 
       {/* Main Content */}
       <div className="flex-1 ml-4">
-        {<Outlet /> ? (
-          <Outlet />
-        ) : (
-          <>
-            <Card className="mb-8">
-              <div className="flex items-center">
-                <div className="flex items-center">
-                  <Avatar size={64} src="/placeholder.svg?height=64&width=64" />
-                  <div className="ml-4">
-                    <h2 className="text-xl font-bold text-purple-700">
-                      NGUYỄN VINH KHANG
-                    </h2>
-                    <p className="text-gray-600">0327447104</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <Card>
-                <h3 className="text-3xl font-bold">3</h3>
-                <p className="text-gray-600">đơn hàng</p>
-              </Card>
-              <Card>
-                <h3 className="text-3xl font-bold">450K</h3>
-                <p className="text-gray-600">Tổng tiền tích lũy</p>
-              </Card>
-            </div>
-          </>
-        )}
+        <Outlet />
       </div>
     </div>
   );

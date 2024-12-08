@@ -5,31 +5,39 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faCartShopping,
-  faHeart,
-  faMountain,
   faSearch,
   faSignIn,
 } from "@fortawesome/free-solid-svg-icons";
-import avatar from "../../assets/image/default_avatar.jpg";
 import logoShop from "../../assets/icon/logoShop.png";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { authJwtAsync, logout } from "../../redux/slices/authSlice";
-import { fetchCart } from "../../redux/slices/cartSlice";
+import { fetchCart, resetCart } from "../../redux/slices/cartSlice";
 import { toast } from "react-toastify";
-function Header() {
+function Header({ searchInput, setSearchInput, handleSearch }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isAuth = useSelector((state) => state.auth.isAuth);
   const user = useSelector((state) => state.auth.user);
-  const [searchInput, setSearchInput] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const cartItems = useSelector((state) => state.cart.productItem);
+
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchCart(user.id));
+    } else{
+
+    }
+  }, [dispatch, user]);
+
+  console.log(cartItems);
   const handleLogout = () => {
     setIsModalOpen(true);
   };
   // Hàm xác nhận logout
   const handleConfirmLogout = () => {
     setIsModalOpen(false);
+    dispatch(resetCart());
     dispatch(logout()); // Gọi hành động logout để xóa dữ liệu và reset state
     toast.info("Đăng xuất thành công!");
     navigate("/"); // Chuyển hướng đến trang đăng nhập
@@ -39,6 +47,7 @@ function Header() {
   const handleCancelLogout = () => {
     setIsModalOpen(false);
   };
+
   const userItems = [
     {
       key: "0",
@@ -119,7 +128,8 @@ function Header() {
           dispatch(fetchCart(user.id));
         } else {
           // Token hết hạn, xóa token khỏi localStorage
-          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          localStorage.removeItem("access_token");
         }
       } catch (error) {
         console.error("Invalid token", error);
@@ -129,41 +139,36 @@ function Header() {
   const scrollToFooter = () => {
     document.querySelector("footer")?.scrollIntoView({ behavior: "smooth" });
   };
-  const handleSearch = (e) => {
-    if (e.key === "Enter" && searchInput.trim()) {
-      // Điều hướng đến trang tìm kiếm với keyword
-      const encodedKeyword = encodeURIComponent(searchInput.trim());
-      navigate(`/product/search?keyword=${encodedKeyword}`);
-    }
-  };
 
   return (
-    <div className="bg-primary px-4 py-2 sticky top-0 z-50 max-w-[1200px] md:min-w-fit mx-auto">
-      <div className="flex justify-between items-center w-full lg:text-sm">
-        {/* Logo */}
+    <div className="bg-primary px-4 max-w-[1200px] mx-auto">
+      {/* Logo */}
+      <div className="flex xs:justify-between w-full md:w-full items-center text-sm">
         <div
-          className="flex items-center cursor-pointer min-w-fit"
+          className="items-center cursor-pointer mr-2 block"
           onClick={() => navigate("/")}
         >
-          <img src={logoShop} alt="logo" className="w-10 h-10" />
-          <span className="ml-2 text-xl text-white font-bold">TechZone</span>
+          <div className="text-xl text-white font-semibold sm:font-bold flex items-center gap-2">
+            <img src={logoShop} alt="logo" className="size-8 sm:size-10" />
+            <div className="hidden xs:block min-w-fit">TechZone</div>
+          </div>
         </div>
 
-        <div className="hidden xs:block">
+        <div className="hidden xs:block ">
           <Dropdown
             menu={{ items: categoryItems }}
             trigger={["click"]}
             placement="bottomRight"
           >
-            <button className="flex text-white items-center font-semibold justify-between bg-red-500 py-2 px-6 gap-2 rounded-md">
-              <FontAwesomeIcon icon={faBars} className="text-white" />
+            <button className="flex text-white items-center font-semibold justify-between py-2 px-4 gap-2 rounded-md mx-1 bg-red-500">
+              <FontAwesomeIcon icon={faBars} className="text-white size-5" />
               <div>Danh mục</div>
             </button>
           </Dropdown>
         </div>
 
         {/* Search Bar */}
-        <div className="hidden md:block w-full max-w-md">
+        <div className="hidden md:block w-full md:max-w-[250px] xl:max-w-sm">
           <div className="flex items-center bg-white rounded-full px-4">
             <FontAwesomeIcon icon={faSearch} className="text-gray-500 mr-2" />
             <input
@@ -197,7 +202,7 @@ function Header() {
           {/* Yêu thích */}
           <button
             onClick={() => navigate("/wishList")}
-            className="flex items-center text-white hover:underline px-2"
+            className="hidden md:flex items-center text-white hover:underline px-2"
           >
             <span className="hidden xs:block text-sm font-medium">
               Yêu thích
@@ -207,7 +212,7 @@ function Header() {
           {/* Liên hệ */}
           <button
             onClick={scrollToFooter}
-            className="flex items-center text-white hover:underline px-2"
+            className="hidden md:flex items-center text-white hover:underline px-2"
           >
             <span className="hidden xs:block text-sm font-medium">Liên hệ</span>
           </button>
@@ -216,10 +221,13 @@ function Header() {
             onClick={() => navigate("/cart")}
             className="text-white flex items-center hover:bg-red-400 px-2 py-2 rounded-md bg-red-500"
           >
-            <FontAwesomeIcon icon={faCartShopping} className="mr-1" />
-            <span className="hidden xs:block text-sm font-medium">
-              Giỏ hàng
-            </span>
+            <FontAwesomeIcon icon={faCartShopping} className="mr-1 size-5" />
+            <div className="hidden xs:block text-sm font-medium">Giỏ hàng</div>
+            {cartItems.length > 0 && (
+              <span className="relative bg-yellow-500 text-white text-xs font-bold w-5 h-5 ml-1 flex items-center justify-center rounded-full">
+                {cartItems.length}
+              </span>
+            )}
           </button>
           {isModalOpen && (
             <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center">
@@ -248,17 +256,18 @@ function Header() {
               menu={{ items: userItems }}
               trigger={["click"]}
               placement="bottomRight"
+              className="p-0 m-0"
             >
-              <div className="flex items-center cursor-pointer pr-4 bg-red-500">
+              <button className="flex ml-1 items-center cursor-pointer px-2 py-2 rounded-md bg-red-500">
                 <img
                   src={user?.image || "/default_avatar.jpg"}
                   alt="avatar"
-                  className="w-8 h-8 rounded-full"
+                  className="w-5 h-5 rounded-full"
                 />
-                <div className="ml-1 text-white text-sm inline-block min-w-fit">
-                  {user?.username || "User"}
+                <div className="ml-1 font-medium text-white text-sm inline-block min-w-fit">
+                  {user?.username}
                 </div>
-              </div>
+              </button>
             </Dropdown>
           ) : (
             <button
@@ -275,14 +284,19 @@ function Header() {
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="mt-2 md:hidden">
-        <div className="flex items-center bg-white rounded-full px-4">
-          <FontAwesomeIcon icon={faSearch} className="text-gray-500 mr-2" />
-          <input
-            type="search"
-            placeholder="Tìm kiếm sản phẩm..."
-            className="w-full py-2 focus:outline-none"
-          />
+      <div className="mt-2 max-w-[760px] md:hidden">
+        <div className="flex items-center">
+          <div className="bg-white flex items-center w-full rounded-xl mr-4 px-4">
+            <FontAwesomeIcon icon={faSearch} className="text-gray-500 mr-2" />
+            <input
+              type="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleSearch}
+              placeholder="Tìm kiếm sản phẩm..."
+              className="w-full py-2 focus:outline-none rounded-full"
+            />
+          </div>
         </div>
       </div>
     </div>

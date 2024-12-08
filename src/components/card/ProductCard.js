@@ -1,10 +1,40 @@
 import React from "react";
-import { Card } from "antd";
-import { faHeart, faStar } from "@fortawesome/free-solid-svg-icons";
+import { Card, Rate } from "antd";
+import { faHeart, faStar, faStarHalf } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatCurrency } from "../../utils/currencyUtils";
 import { useNavigate } from "react-router-dom";
 import { convertToSlug } from "../../utils/convertUltils";
+export function StarRating({ rating, maxRating = 5 }) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  return (
+    <div className="flex items-center">
+      {Array.from({ length: maxRating }).map((_, index) => {
+        if (index < fullStars) {
+          return (
+            <FontAwesomeIcon
+              key={index}
+              icon={faStar}
+              className="text-yellow-500 w-4 h-4"
+            />
+          );
+        } else if (index === fullStars && hasHalfStar) {
+          return (
+            <FontAwesomeIcon
+              key={index}
+              icon={faStarHalf}
+              className="text-yellow-500 w-4 h-4"
+            />
+          );
+        } else {
+          return null;
+        }
+      })}
+    </div>
+  );
+}
 function ProductCard({ product }) {
   const navigate = useNavigate();
   const handleProductClick = (product) => {
@@ -19,8 +49,7 @@ function ProductCard({ product }) {
           handleProductClick(product);
         }}
         styles={{
-          body: { padding: "12px" ,
-          },
+          body: { padding: "12px" },
         }}
       >
         {/* Image Section */}
@@ -53,27 +82,10 @@ function ProductCard({ product }) {
           </div>
         </div>
 
-        {/* Colors Section */}
-        <div className="flex items-baseline mt-2 mb-2 overflow-x-hidden">
-          {product.colors?.map((variant, index) => (
-            <div key={index}>
-              <div className="text-gray-500 text-xs border rounded-md p-1 mr-1">
-                {variant}
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Rating and Favorite Section */}
         <div className="absolute bottom-2 left-0 right-0 flex items-center justify-between px-[12px]">
           <div className="flex items-center">
-            {Array.from({ length: product.rating }).map((_, i) => (
-              <FontAwesomeIcon
-                icon={faStar}
-                key={i}
-                className="text-yellow-500 w-4 h-4"
-              />
-            ))}
+            <StarRating rating={product.rating} />
           </div>
           <div
             className="flex items-center gap-1 hover:animate-blink z-40"

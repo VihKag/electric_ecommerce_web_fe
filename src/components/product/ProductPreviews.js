@@ -1,191 +1,166 @@
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faStarHalfAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "antd";
-const ratings = [
-  { stars: 5, count: 2 },
-  { stars: 4, count: 0 },
-  { stars: 3, count: 0 },
-  { stars: 2, count: 0 },
-  { stars: 1, count: 0 },
-];
+import { useEffect, useState } from "react";
+import { commonService } from "../../services/apiService";
+import { toast } from "react-toastify";
 
-const totalRatings = ratings.reduce((sum, rating) => sum + rating.count, 0);
-const averageRating =
-  ratings.reduce((sum, rating) => sum + rating.stars * rating.count, 0) /
-    totalRatings || 0;
-const reviews = [
+const initialData = [
   {
-    id: 1,
-    user: {
-      name: "Trọng",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
+    email: "hocnuahocmai2611@gmail.com",
     rating: 5,
-    date: "2024-05-17",
-    text: "Hàng tốt, dùng ngon",
-    highlights: [
-      "Hiệu năng Siêu mạnh mẽ",
-      "Thời lượng pin Cực khủng",
-      "Chất lượng camera Chụp đẹp, chuyên nghiệp",
-    ],
+    content: "Sản phẩm này tôi đã mua rồi. Hàng rất tốt",
+    productId: "6733b0cfb164eceb5bf5d824",
   },
   {
-    id: 2,
-    user: {
-      name: "Ahuan",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
+    email: "hocnuahocmai2611@gmail.com",
     rating: 4,
-    date: "2022-11-27",
-    text: "Quan tâm sản phẩm S Ultra 23",
+    content: "Sản phẩm này tôi đã mua rồi. Hàng rất tốt",
+    productId: "6733b0cfb164eceb5bf5d824",
   },
 ];
-
-function StarRating({ rating }) {
+function StarRating({ rating, onChange }) {
   return (
     <div className="flex space-x-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <FontAwesomeIcon
           key={star}
           icon={faStar}
-          className={`text-yellow-400 ${
-            star <= rating ? "fill-current" : "text-gray-300"
+          size="lg"
+          className={`cursor-pointer ${
+            star <= rating ? "text-yellow-400" : "text-slate-300"
           }`}
-          size="sm"
+          onClick={() => onChange && onChange(star)}
         />
       ))}
     </div>
   );
 }
 
-function ReviewHighlights({ highlights }) {
-  return (
-    <div className="flex flex-wrap gap-2 mt-2">
-      {highlights &&
-        highlights.map((highlight, index) => (
-          <span
-            key={index}
-            className="bg-gray-100 text-xs px-2 py-1 rounded-lg text-gray-700"
-          >
-            {highlight}
-          </span>
-        ))}
-    </div>
-  );
-}
+export default function ProductReviews({ productId }) {
+  const [data, setData] = useState(initialData);
+  const [newComment, setNewComment] = useState("");
+  const [newRating, setNewRating] = useState(0);
+  const [reviews, setReviews] = useState([]);
 
-export default function ProductReviews() {
+  const fetchReviews = async () => {
+    try {
+      const response = await commonService.getReviewsByProductId(productId);
+      console.log(response.data);
+      setReviews(response.data.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim() || newRating === 0) {
+      toast.info("Vui lòng điền đầy đủ thông tin.");
+      return;
+    }
+    const user = JSON.parse(localStorage.getItem("user"));
+    console.log(user);
+    if (!user) {
+      {
+        toast.info("Vui lòng đăng nhập để đánh giá.");
+        return;
+      }
+    }
+
+    const newReview = {
+      userId: user.id, // Dùng email giả cho người dùng không đăng nhập
+      rating: newRating,
+      content: newComment,
+      productId: productId,
+    };
+
+    try {
+      const response = await commonService.addReviews(newReview);
+      console.log(response.data);
+      fetchReviews(productId);
+      setNewComment("");
+      setNewRating(0);
+      toast.success("Đã thêm bình luận thành công!");
+    } catch (error) {
+      // Kiểm tra nếu server trả về lỗi với response
+      if (error.response) {
+        console.error("Error response:", error.response.data.message);
+        toast.error(error.response.data.message || "Đã xảy ra lỗi!");
+      } else if (error.request) {
+        // Nếu không nhận được phản hồi từ server
+        console.error("No response received:", error.request);
+        toast.error("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
+      } else {
+        // Lỗi khác (thường là lỗi logic code)
+        console.error("Error:", error.message);
+        toast.error("Đã xảy ra lỗi không xác định.");
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
   return (
     <div className="w-full mx-auto p-6 rounded-md border">
-      {/*THống kê dánh giá*/}
+      {/* Thống kê đánh giá */}
       <div>
         <div className="mx-auto">
           <h2 className="text-lg font-semibold mb-4">
-            Đánh giá & nhận xét TECNO SPARK Go 2024 4GB 64GB
+            Đánh giá & nhận xét sản phẩm
           </h2>
-          <div className="flex items-center mb-4">
-            <div className="text-4xl font-bold mr-2">
-              {averageRating.toFixed(1)}
-            </div>
-            <div className="flex items-center">
-              {[...Array(5)].map((_, index) => (
-                <FontAwesomeIcon
-                  icon={faStar}
-                  key={index}
-                  className={`w-5 h-5 ${
-                    index < Math.round(averageRating)
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                />
-              ))}
-            </div>
-            <div className="text-sm text-gray-500 ml-2">
-              {totalRatings} đánh giá
-            </div>
-          </div>
-          <div className="space-y-2">
-            {ratings.map((rating) => (
-              <div key={rating.stars} className="flex items-center">
-                <div className="w-12 text-sm">{rating.stars}</div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
-                  <div
-                    className="bg-yellow-400 h-2 rounded-full"
-                    style={{ width: `${(rating.count / totalRatings) * 100}%` }}
-                  ></div>
-                </div>
-                <div className="w-12 text-sm text-right min-w-fit">
-                  {rating.count} đánh giá
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
-      
-      <hr  className="my-4"/>
 
+      <hr className="my-4" />
+
+      {/* Form thêm bình luận */}
+      <div className="mb-6">
+        <h2 className="text-xl font-bold mb-4">Thêm đánh giá của bạn</h2>
+        <div className="flex flex-col space-y-4">
+          <div>
+            <p className="text-base font-medium mb-2">Đánh giá của bạn:</p>
+            <StarRating rating={newRating} onChange={setNewRating} />
+          </div>
+          <textarea
+            className="w-full border rounded-md p-2"
+            rows="4"
+            placeholder="Nhập nhận xét của bạn..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          ></textarea>
+          <button
+            onClick={handleAddComment}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Gửi nhận xét
+          </button>
+        </div>
+      </div>
+
+      {/* Danh sách đánh giá */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Đánh giá của khách hàng</h2>
 
-        {/* Bộ lọc */}
-        <div className="mb-6">
-          <div className="flex space-x-4">
-            <button className="px-4 py-2 rounded-full bg-red-500 text-white">
-              Tất cả
-            </button>
-            <button className="px-4 py-2 rounded-full border">
-              Có hình ảnh
-            </button>
-            <button className="px-4 py-2 rounded-full border">
-              Đã mua hàng
-            </button>
-          </div>
-          <div className="flex space-x-2 mt-4">
-            {[5, 4, 3, 2, 1].map((star) => (
-              <button
-                key={star}
-                className="px-2 py-1 rounded-full border flex items-center space-x-1"
-              >
-                <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
-                <span>{star}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Danh sách đánh giá */}
         <div className="space-y-6">
-          {reviews.map((review, index) => (
-            <div
-              key={review.id}
-              className="flex space-x-4 border rounded-md p-4"
-            >
-              <Avatar
-                className="flex items-center justify-center text-white bg-purple-500 w-10 h-10"
-                style={{
-                  backgroundColor: review.id === 1 ? "#6b46c1" : "#48bb78",
-                }}
-              >
-                {review.user.name[0]}
+          {reviews?.map((review, index) => (
+            <div key={index} className="flex space-x-4 border rounded-md p-4">
+              <Avatar className="bg-purple-500">
+                {review.email ? review.email[0].toUpperCase() : "U"}
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">{review.user.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    {new Date(review.date).toLocaleDateString("vi-VN", {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      second: "numeric",
+                  <h3 className="font-semibold">
+                    {review.email ? review.email : "undefined_user"}
+                  </h3>
+                  <span className="text-sm text-gray-500">
+                    {new Date(review.createdAt).toLocaleDateString("vi-VN", {
+                      timeZone: "Asia/Ho_Chi_Minh",
                     })}
-                  </p>
+                  </span>
                 </div>
                 <StarRating rating={review.rating} />
-                <ReviewHighlights highlights={review.highlights} />
-                <p className="mt-2 text-gray-700">{review.text}</p>
+                <p className="mt-2 text-gray-700">{review.content}</p>
               </div>
             </div>
           ))}

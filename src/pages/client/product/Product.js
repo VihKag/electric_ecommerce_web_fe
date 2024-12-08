@@ -4,15 +4,21 @@ import ThumbsGallery from "../../../components/thumbs/Thumbs";
 import ProductReviews from "../../../components/product/ProductPreviews";
 import ProductQuestions from "../../../components/product/ProductQuestions";
 import ProductDescription from "../../../components/product/ProductDescription";
-import { Modal } from "antd";
-import { productService } from "../../../services/apiService";
+import { Breadcrumb, Modal } from "antd";
+import { categoryService, productService } from "../../../services/apiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatCurrency } from "../../../utils/currencyUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import SwiperWrapper from "../../../components/swiper/Swiper";
+import { toast } from "react-toastify";
+import { HomeOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { addToCheckout, updateCart } from "../../../redux/slices/cartSlice";
+import { nanoid } from "nanoid"; // Import nanoid
 const ProductPage = () => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
   const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [details, setDetails] = useState([]);
@@ -23,34 +29,55 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [category, setCategory] = useState({});
+  const dispatch = useDispatch();
 
-  const handleAddToCart = async () => {
-    if (!selectedVariant) {
-      alert("Vui lòng chọn bộ nhớ và màu sắc!");
-      return;
-    }
-
-    try {
-      const payload = {
-        user: "user_id_here", // Thay bằng ID người dùng thật
+  // Xử lý hành động khi nhấn nút "MUA NGAY"
+  const handleBuyNow = () => {
+    if (selectedVariant) {
+      const orderItem = {
         product: product._id,
-        quantity: quantity,
-        memory: selectedVariant.memory,
+        name: product.name,
+        quantity: 1,
+        images: product.images[0],
+        price:
+          selectedVariant?.variant?.price?.discount ??
+          selectedVariant?.variant?.price?.initial ??
+          0, // Giá mặc định là 0 nếu cả hai đều không tồn tại
         color: selectedVariant.color,
+        memory: selectedVariant.memory,
       };
+      // Tạo mã ngẫu nhiên 6 ký tự sử dụng nanoid
+      const randomKey = nanoid(6);
 
-      const response = "data"; // Thay bằng API thực tế
-
-      if (response.data.success) {
-        alert("Thêm vào giỏ hàng thành công!");
-      } else {
-        alert(response.data.message);
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Có lỗi xảy ra khi thêm vào giỏ hàng.");
+      // Lưu vào sessionStorage với key là mã ngẫu nhiên
+      sessionStorage.setItem(randomKey, JSON.stringify([orderItem]));
+      navigate(`/checkout?ckt=${randomKey}`);
+    } else {
+      toast.infor("Vui lòng chọn một loại sản phẩm trước khi mua!");
     }
   };
+
+  const handleUpdateCart = () => {
+    const payload = {
+      user: user?.id,
+      product: product._id,
+      quantity: quantity,
+      memory: selectedVariant.memory,
+      color: selectedVariant.color,
+    };
+  
+    dispatch(updateCart(payload))
+      .unwrap()
+      .then((updatedCart) => {
+        console.log('Cập nhật giỏ hàng thành công:', updatedCart);
+      })
+      .catch((error) => {
+        console.error('Lỗi cập nhật giỏ hàng:', error);
+      });
+  };
+
+
   // Hàm để mở modal
   const showModal = () => {
     setIsModalVisible(true);
@@ -60,7 +87,9 @@ const ProductPage = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
+  useEffect(() => {
+    console.log(selectedVariant);
+  }, [selectedColor, selectedMemory]);
   const SpecsTable = () => {
     return (
       <div>
@@ -131,7 +160,10 @@ const ProductPage = () => {
         setProduct(response.data.data.product);
         setDetails(response.data.data.details);
         setVariants(response.data.data.variants);
-
+        const categoryRes = await categoryService.getCategoryById(
+          response.data.data.product.category
+        );
+        setCategory(categoryRes.data.data);
         // Mặc định chọn variant đầu tiên
         const defaultMemory = response.data.data.variants[0];
         if (defaultMemory) {
@@ -154,6 +186,29 @@ const ProductPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4">
+      {/* {console.log("select: ", selectedVariant?.variant)} */}
+      <div className="my-2">
+        <Breadcrumb
+          className="text-base text-gray font-medium"
+          items={[
+            {
+              href: "/",
+              title: <HomeOutlined />,
+            },
+            {
+              href: `/category/${product.category}`,
+              title: (
+                <>
+                  <span>{category.name}</span>
+                </>
+              ),
+            },
+            {
+              title: product.name,
+            },
+          ]}
+        />
+      </div>
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Left column */}
         <div className="md:w-3/5">
@@ -178,7 +233,7 @@ const ProductPage = () => {
                   }
                   className="ml-2 cursor-pointer text-primary"
                 >
-                  {product.brand?.name}
+                  {product.brand?.name ? product.brand.name : null}
                 </div>
               </div>
               <span className="mx-2 select-none">|</span>
@@ -186,7 +241,7 @@ const ProductPage = () => {
               <div className="flex items-center">
                 <div className="font-semibold">Đánh giá:</div>
                 <div className="ml-2 flex items-center">
-                  <h4 className="mr-1">{product.rating}</h4>
+                  <h4 className="mr-1">{product.rating?.toFixed(1)}</h4>
                   <span>
                     <FontAwesomeIcon icon={faStar} color="yellow" />
                   </span>
@@ -233,7 +288,7 @@ const ProductPage = () => {
                     ?.variants.map((v, index) => (
                       <button
                         key={index}
-                        className={`px-4 py-1 border rounded flex flex-col ${
+                        className={`px-2 min-w-fit py-1 border rounded flex flex-col ${
                           selectedColor === v.color
                             ? "ring-primary ring-1"
                             : "bg-white text-black"
@@ -248,27 +303,47 @@ const ProductPage = () => {
                         }}
                       >
                         <div className="font-medium">{v.color}</div>
-                        <div>{formatCurrency(v.price.initial)}</div>
+                        <div>
+                          {formatCurrency(
+                            v.price.discount
+                              ? v.price.discount
+                              : v.price.initial
+                          )}
+                        </div>
                       </button>
                     ))}
                 </div>
               </div>
             </div>
 
-            <div className="rounded mb-4 flex items-baseline gap-2">
-              <div className="text-sale font-semibold text-lg">
-                {formatCurrency(selectedVariant.variant?.price.initial)}
+            {selectedVariant ? (
+              <div className="rounded mb-4 flex items-baseline gap-2">
+                <div className="text-sale font-semibold text-lg">
+                  {formatCurrency(
+                    selectedVariant.variant?.price?.discount
+                      ? selectedVariant.variant.price.discount
+                      : selectedVariant.variant?.price?.initial
+                  )}
+                </div>
+                {selectedVariant.variant?.price?.discount && (
+                  <span className="text-discount line-through font-semibold">
+                    {formatCurrency(selectedVariant.variant.price.initial)}
+                  </span>
+                )}
               </div>
-              <span className="text-discount line-through font-semibold">
-                {formatCurrency(selectedVariant.variant?.price.discount)}
-              </span>
-            </div>
+            ) : null}
 
             <div className="flex gap-2">
-              <button className="w-full bg-primary text-white py-2 rounded font-medium">
+              <button
+                onClick={handleBuyNow}
+                className="w-full bg-primary text-white py-2 rounded font-medium"
+              >
                 MUA NGAY
               </button>
-              <button className="w-full bg-white text-primary border-primary border py-2 rounded font-medium">
+              <button 
+                onClick={()=>handleUpdateCart()}
+
+                className="w-full bg-white text-primary border-primary border py-2 rounded font-medium">
                 THÊM VÀO GIỎ
               </button>
             </div>
@@ -304,18 +379,21 @@ const ProductPage = () => {
       </div>
 
       <div className="my-4 border p-4 rounded-md">
-        <div className="text-primary font-bold text-2xl mb-2 text-center">
+        <div className="text-primary font-bold text-xl text-center">
           CÂU HỎI THƯỜNG GẶP
         </div>
         <ProductQuestions />
       </div>
 
-      <div>
+      <div className="p-2 rounded-md border my-2">
+        <div className="font-bold text-xl m-2 text-left">
+          Sản phẩm liên quan
+        </div>
         <SwiperWrapper items={relative} className="my-8" />
       </div>
 
       <div>
-        <ProductReviews />
+        <ProductReviews productId={productId} />
       </div>
     </div>
   );
