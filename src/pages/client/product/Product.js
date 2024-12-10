@@ -52,6 +52,11 @@ const ProductPage = () => {
 
       // Lưu vào sessionStorage với key là mã ngẫu nhiên
       sessionStorage.setItem(randomKey, JSON.stringify([orderItem]));
+      if (!user) {
+        toast.info("Vui lòng đăng nhập để mua hàng!");
+        navigate("/auth/login");
+        return;
+      }
       navigate(`/checkout?ckt=${randomKey}`);
     } else {
       toast.infor("Vui lòng chọn một loại sản phẩm trước khi mua!");
@@ -66,17 +71,16 @@ const ProductPage = () => {
       memory: selectedVariant.memory,
       color: selectedVariant.color,
     };
-  
+
     dispatch(updateCart(payload))
       .unwrap()
       .then((updatedCart) => {
-        console.log('Cập nhật giỏ hàng thành công:', updatedCart);
+        console.log("Cập nhật giỏ hàng thành công:", updatedCart);
       })
       .catch((error) => {
-        console.error('Lỗi cập nhật giỏ hàng:', error);
+        console.error("Lỗi cập nhật giỏ hàng:", error);
       });
   };
-
 
   // Hàm để mở modal
   const showModal = () => {
@@ -340,10 +344,10 @@ const ProductPage = () => {
               >
                 MUA NGAY
               </button>
-              <button 
-                onClick={()=>handleUpdateCart()}
-
-                className="w-full bg-white text-primary border-primary border py-2 rounded font-medium">
+              <button
+                onClick={() => handleUpdateCart()}
+                className="w-full bg-white text-primary border-primary border py-2 rounded font-medium"
+              >
                 THÊM VÀO GIỎ
               </button>
             </div>

@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   UserOutlined,
   MailOutlined,
   PhoneOutlined,
   EditOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
+import { commonService } from "../../../../services/apiService";
+import { Form, Modal, Select, App } from "antd";
+import axios from "axios";
+import { toast } from "react-toastify";
+import AddressModal from "../../../../components/modal/AddressModal";
+const { Option } = Select;
 
 export default function UserProfile() {
+  const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user'));
+  const [addresses, setAddresses] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { message } = App.useApp();
+  const user = JSON.parse(localStorage.getItem("user"));
   const dispatch = useDispatch();
   const {
     control,
@@ -34,12 +45,113 @@ export default function UserProfile() {
     setIsEditing(false);
   };
 
+  const getAddressByUserId = async () => {
+    try {
+      const response = await commonService.getAddresseByUserId(user.id);
+      console.log("addresses: ", response.data.data);
+      setAddresses(response.data.data);
+    } catch (error) {
+      console.log("addresses: ", error);
+    }
+  };
+
+  const handleOk = async () => {
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        userId: user.id, // Thay bằng ID thực tế của người dùng
+        address: `${values.house}, ${values.ward}, ${values.district}, ${values.province}`,
+        name: values.name, // Hoặc giá trị từ form nếu cần
+        phone: values.phone,
+        status: true,
+      };
+
+      const response = await axios.post(
+        "http://127.0.0.1:4000/address/create",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Địa chỉ đã được thêm thành công!");
+        form.resetFields();
+        setIsModalOpen(false);
+        // Reload lại trang
+        window.location.reload();
+      }
+    } catch (error) {
+      if (error.response) {
+        // Lỗi từ server (có phản hồi)
+        toast.error(error.response.data.message || "Thêm địa chỉ thất bại!");
+      } else if (error.request) {
+        // Lỗi không nhận được phản hồi từ server
+        toast.error("Không thể kết nối đến máy chủ!");
+      } else {
+        // Lỗi khác
+        toast.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+      }
+      console.error(error);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    // Xác nhận hành động xóa
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn xóa địa chỉ này?",
+      content: "Hành động này không thể hoàn tác!",
+      okText: "Có",
+      cancelText: "Không",
+      onOk: async () => {
+        try {
+          const response = await axios.delete(
+            `http://127.0.0.1:4000/address/user/${user.id}/location/${addressId}`
+          );
+          if (response.status === 200) {
+            toast.success("Địa chỉ đã được xóa thành công!");
+            getAddressByUserId(); // Cập nhật lại danh sách địa chỉ sau khi xóa
+          }
+        } catch (error) {
+          if (error.response) {
+            toast.error(
+              error.response.data.message || "Xóa địa chỉ thất bại!"
+            );
+          } else if (error.request) {
+            toast.error("Không thể kết nối đến máy chủ!");
+          } else {
+            toast.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+          }
+        }
+      },
+      onCancel: () => {
+        console.log("Xóa địa chỉ bị hủy");
+      },
+    });
+  };
+  useEffect(() => {
+    getAddressByUserId();
+  }, []);
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="px-2 md:flex md:gap-2">
+      <AddressModal
+        handleCancel={handleCancel}
+        isModalOpen={isModalOpen}
+        handleOk={handleOk}
+        form={form}
+      />
+
+      <div className="md:w-2/3 mx-auto">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900">
               Hồ sơ tài khoản
             </h1>
             <button
@@ -181,6 +293,81 @@ export default function UserProfile() {
           </form>
         </div>
       </div>
+
+      <div className="md:w-1/3 mx-auto mt-2 md:mt-0">
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Địa chỉ mặc định
+            </h1>
+            {addresses.length > 0 ? (
+              <button
+                onClick={() => handleDeleteAddress(addresses[0]._id)}
+                className="p-2 rounded flex items-center"
+              >
+                <CloseOutlined />
+              </button>
+            ) : null}
+          </div>
+
+          {addresses.length > 0 ? (
+            <div className="w-full mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+              <div className="space-y-4 px-6">
+                <div className="flex items-start">
+                  <svg
+                    className="w-5 h-5 text-green-500 mr-2 mt-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    ></path>
+                  </svg>
+                  <div>
+                    <p className="font-medium text-gray-700">Address</p>
+                    <p className="text-gray-600">{addresses[0].address}</p>
+                  </div>
+                </div>
+                <div className="flex items-start pb-4">
+                  <svg
+                    className="w-5 h-5 text-red-500 mr-2 mt-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    ></path>
+                  </svg>
+                  <div>
+                    <p className="font-medium text-gray-700">Phone</p>
+                    <p className="text-gray-600">{addresses[0].phone}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-gray-600 pb-4">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-blue-500 text-white p-2 rounded-md"
+              >
+                + Thêm địa chỉ
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
+

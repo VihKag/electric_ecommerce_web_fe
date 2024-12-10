@@ -91,7 +91,6 @@ function ProductCard({ product }) {
             className="flex items-center gap-1 hover:animate-blink z-40"
             onClick={(event) => {
               event.stopPropagation();
-              console.log("love-rating");
             }}
           >
             <div className="font-semibold min-w-fit text-secondary">

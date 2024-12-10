@@ -34,6 +34,7 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         serif: ['Merriweather', 'serif'],
+        nunito: ["'Nunito'", "sans-serif"],
       },
       borderRadius: {
         'lg': '0.5rem',

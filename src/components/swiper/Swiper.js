@@ -33,13 +33,13 @@ export default function SwiperWrapper(props) {
     <div className="relative">
       <div
         ref={nextRef}
-        className="swiper-button-next text-black px-6 py-8 bg-opacity-50 bg-white hidden sm:scale-[0.65] rounded-full shadow-lg"
+        className="swiper-button-next hidden sm:flex text-black px-6 py-8 bg-opacity-50 bg-white sm:scale-[0.65] rounded-full shadow-lg"
       >
         <LeftOutlined />
       </div>
       <div
         ref={prevRef}
-        className="swiper-button-prev text-black px-6 py-8 bg-opacity-50 bg-white hidden sm:scale-[0.65] rounded-full shadow-lg"
+        className="swiper-button-prev hidden sm:flex text-black px-6 py-8 bg-opacity-50 bg-white sm:scale-[0.65] rounded-full shadow-lg"
       >
         <LeftOutlined />
       </div>

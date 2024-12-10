@@ -6,50 +6,13 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import SwiperWrapper from "../../../components/swiper/Swiper";
 import { commonService, productService } from "../../../services/apiService";
 import { convertToSlug } from "../../../utils/convertUltils";
-const menu = [
-  {
-    title: "Điện thoại",
-    url: "/dien-thoai",
-  },
-  {
-    title: "Tablet",
-    url: "/tablet",
-  },
-  {
-    title: "Laptop",
-    url: "/laptop",
-  },
-  {
-    title: "Camera",
-    url: "/camera",
-  },
-  {
-    title: "Loa",
-    url: "/loa",
-  },
-  {
-    title: "Tai nghe",
-    url: "/tai-nghe",
-  },
-  {
-    title: "PC",
-    url: "/pc",
-  },
-  {
-    title: "Tivi",
-    url: "/tivi",
-  },
-  {
-    title: "Đồng hồ",
-    url: "/dong-ho",
-  },
-];
+
 
 export default function Home() {
   const navigate = useNavigate();
   const [productGroups, setProductGroups] = useState();
   const [banners, setBanners] = useState();
-  
+  const [categories, setCategories] = useState();
   const fetchHome = async () => {
     try {
       const response = await productService.getHomePage();
@@ -58,6 +21,8 @@ export default function Home() {
       setBanners(bannersResponse.data.data);
       console.log("data home page:", response.data);
       setProductGroups(response.data.data);
+      const categories = response.data.data.map(item => item.category);
+      setCategories(categories);
     } catch (error) {
       console.log(error.message);
     }
@@ -75,18 +40,18 @@ export default function Home() {
         <div className="top-home sm:h-[480px]  mx-auto flex transition-all">
           <div className="main-menu w-1/5 hidden sm:block min-w-[180px] h-full rounded-md border shadow-lg duration-300">
             <div className="cascading-menu flex flex-col gap-1">
-              {menu.map((item, index) => {
+              {categories?.map((item, index) => {
                 return (
                   <div
                     key={index}
                     className="flex justify-between items-center hover:cursor-pointer hover:bg-gray-200 px-4 py-2 "
                   >
                     <Link
-                      to={item.url}
-                      key={item.url}
+                      to={`category/${item._id}`}
+                      key={item._id}
                       className="hover:text-red-500 font-bold text-gray text-lg"
                     >
-                      {item.title}
+                      {item.name}
                     </Link>
                     <FontAwesomeIcon icon={faChevronRight} color="#374151" />
                   </div>

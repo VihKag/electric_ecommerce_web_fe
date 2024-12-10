@@ -27,11 +27,11 @@ const SuccessOrderPage = () => {
         subTitle="Your order has been processed successfully."
         extra={[
           <Button type="primary" key="back">
-            Go to Home
+            Quay về trang chủ
           </Button>,
         ]}
       />
-      <Title level={2}>Order Details</Title>
+      <Title level={2}>Thông tin đơn hàng</Title>
       <Descriptions bordered>
         <Descriptions.Item label="Order ID">{orderDetails.vnp_TxnRef}</Descriptions.Item>
         <Descriptions.Item label="Amount">{orderDetails.vnp_Amount}</Descriptions.Item>

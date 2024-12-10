@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Form,
   Button,
@@ -37,13 +37,18 @@ const Checkout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const ckt = searchParams.get("ckt");
   const productItems = JSON.parse(sessionStorage.getItem(ckt)) || [];
-
-  const fetchAddresses = async () => {
+  // Tính tổng tiền (dùng useMemo để tránh tính lại không cần thiết)
+  const totalAmount = useMemo(
+    () =>
+      productItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    [productItems]
+  );
+  // Fetch địa chỉ từ server (dùng useCallback để tránh khởi tạo lại hàm)
+  const fetchAddresses = useCallback(async () => {
     try {
       const response = await axios.get(
         `http://127.0.0.1:4000/address/${user.id}`
       );
-
       if (response.data.success) {
         setAddresses(response.data.data);
 
@@ -58,112 +63,96 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [form, user?.id]);
 
-  const handleVNPAYPayment = async () => {
+  // Xử lý thanh toán qua VNPAY
+  const handleVNPAYPayment = useCallback(async () => {
     try {
-      const totalAmount = productItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
-  
-      if (totalAmount <= 0) {
-        throw new Error("Số tiền thanh toán không hợp lệ.");
-      }
-  
-      const payload = { amount: totalAmount };
-  
+      if (totalAmount <= 0) throw new Error("Số tiền thanh toán không hợp lệ.");
+
       const response = await axios.post(
         "http://127.0.0.1:4000/payment/create_payment_urlv2",
-        payload,
+        { amount: totalAmount },
         { headers: { "Content-Type": "application/json" } }
       );
-  
+
       if (response.data.success && response.data.paymentUrl) {
-        return response.data.paymentUrl; // Trả về URL thanh toán
+        return response.data.paymentUrl;
       } else {
-        throw new Error(response.data.message || "Không thể tạo liên kết thanh toán.");
+        throw new Error(
+          response.data.message || "Không thể tạo liên kết thanh toán."
+        );
       }
     } catch (error) {
-      console.error("Error in VNPAY payment:", error);
       toast.error("Đã xảy ra lỗi khi xử lý thanh toán qua VNPAY.");
-      throw error; // Ném lỗi để xử lý ở mức cao hơn
+      throw error;
     }
-  };
-  
+  }, [totalAmount]);
 
-  const createOrder = async () => {
+  // Tạo đơn hàng
+  const createOrder = useCallback(async () => {
     try {
-        const totalAmount = productItems.reduce(
-          (acc, item) => acc + item.price * item.quantity,
-          0
-        );
-    
-        const payload = {
-          user: user.id,
-          productItem: productItems,
-          informationUser: {
-            address:
-              addresses.find((addr) => addr._id === selectedAddress)?.address || "",
-            phone:
-              addresses.find((addr) => addr._id === selectedAddress)?.phone || "",
-            name: user.username || "",
-          },
-        };
-    
-        const response = await axios.post(
-          "http://127.0.0.1:4000/orders",
-          payload,
-          { headers: { "Content-Type": "application/json" } }
-        );
-        console.log(response.data);
-        if (response.data.success) {
-          if (paymentMethod === "vnpay") {
-            const paymentUrl = await handleVNPAYPayment(totalAmount);
-            if (paymentUrl) {
-              window.location.href = paymentUrl; // Điều hướng đến trang thanh toán
-            }
-          } 
-          if (paymentMethod === "cash"){
-            toast.success("Đặt hàng thành công!");
-            navigate("/order/success", { state: response.data.order });
-          }
-        } else {
-          toast.error("Đặt hàng thất bại!");
-        }
-      } catch (error) {
-        console.error("Error creating order:", error);
-        toast.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại!");
-      }
-  };
+      const payload = {
+        user: user.id,
+        productItem: productItems,
+        informationUser: {
+          address:
+            addresses.find((addr) => addr._id === selectedAddress)?.address ||
+            "",
+          phone:
+            addresses.find((addr) => addr._id === selectedAddress)?.phone || "",
+          name: user.username || "",
+        },
+      };
 
+      const response = await axios.post(
+        "http://127.0.0.1:4000/orders",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.data.success) {
+        if (paymentMethod === "vnpay") {
+          const paymentUrl = await handleVNPAYPayment();
+          if (paymentUrl) window.location.href = paymentUrl;
+        } else if (paymentMethod === "cash") {
+          toast.success("Đặt hàng thành công!");
+          navigate("/order/success", { state: response.data.order });
+        }
+      } else {
+        toast.error("Đặt hàng thất bại!");
+      }
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại!");
+    }
+  }, [
+    user,
+    productItems,
+    addresses,
+    selectedAddress,
+    paymentMethod,
+    navigate,
+    handleVNPAYPayment,
+  ]);
+
+  // Xử lý fetch địa chỉ khi mount
   useEffect(() => {
     fetchAddresses();
-  }, []);
+  }, [fetchAddresses]);
 
+  // Đặt địa chỉ mặc định khi danh sách địa chỉ thay đổi
   useEffect(() => {
-    // Tìm địa chỉ mặc định (status === true)
     const defaultAddress = addresses.find((address) => address.status);
-    if (defaultAddress) {
-      setSelectedAddress(defaultAddress._id);
-    } else if (addresses.length > 0) {
-      // Nếu không có địa chỉ mặc định, chọn địa chỉ đầu tiên
-      setSelectedAddress(addresses[0]._id);
-    }
+    setSelectedAddress(defaultAddress?._id || addresses[0]?._id || null);
   }, [addresses]);
 
+  // Xử lý khi không có sản phẩm
   useEffect(() => {
     if (productItems.length === 0) {
-      // Bắt đầu bộ đếm
-      const timer = setInterval(() => {
-        setCountdown((prev) => prev - 1); // Giảm thời gian mỗi giây
-      }, 1000);
-      // Điều hướng sau khi hết thời gian
-      const navigateTimer = setTimeout(() => {
-        navigate("/");
-      }, 10000);
-
-      // Cleanup khi component bị unmount
+      const timer = setInterval(() => setCountdown((prev) => prev - 1), 1000);
+      const navigateTimer = setTimeout(() => navigate("/"), 10000);
       return () => {
         clearInterval(timer);
         clearTimeout(navigateTimer);

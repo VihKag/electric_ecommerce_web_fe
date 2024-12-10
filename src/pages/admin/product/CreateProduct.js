@@ -30,18 +30,20 @@ const CreateProduct = () => {
     try {
       const response = await adminService.getBrands();
       console.log("brands: ", response.data.data);
-      setBrands(response.data.data);
+      setBrands(response.data.data.brands);
     } catch (error) {
       console.log(error.message);
+      return;
     }
   };
   const fetchCategories = async () => {
     try {
       const response = await adminService.getCategories();
       console.log("categories: ", response.data.data);
-      setCategories(response.data.data);
+      setCategories(response.data.data.categories);
     } catch (error) {
       console.log(error.message);
+      return;
     }
   };
   const onFinish = async (values) => {

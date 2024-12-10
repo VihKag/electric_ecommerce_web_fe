@@ -14,6 +14,7 @@ import { jwtDecode } from "jwt-decode";
 import { authJwtAsync, logout } from "../../redux/slices/authSlice";
 import { fetchCart, resetCart } from "../../redux/slices/cartSlice";
 import { toast } from "react-toastify";
+import { categoryService } from "../../services/apiService";
 function Header({ searchInput, setSearchInput, handleSearch }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,16 +22,25 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
   const user = useSelector((state) => state.auth.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const cartItems = useSelector((state) => state.cart.productItem);
-
+  const [categories, setCategories] = useState([]);
+  const fetchCategory = async () => {
+    try {
+      const response = await categoryService.getAllCategories();
+      console.log("data category: ", response.data.data);
+      setCategories(response.data.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  useEffect(() => {
+    fetchCategory();
+  }, []);
   useEffect(() => {
     if (user?.id) {
       dispatch(fetchCart(user.id));
-    } else{
-
+    } else {
     }
   }, [dispatch, user]);
-
-  console.log(cartItems);
   const handleLogout = () => {
     setIsModalOpen(true);
   };
@@ -48,6 +58,10 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
     setIsModalOpen(false);
   };
 
+  const categoryItems = categories.map((item, index) => ({
+    key: `cate${item._id}`,
+    label: <Link to={`/category/${item._id}`}>{item.name}</Link>,
+  }));
   const userItems = [
     {
       key: "0",
@@ -70,48 +84,8 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
       label: <div onClick={handleLogout}>Đăng xuất</div>,
     },
   ];
-  const categoryItems = [
-    {
-      key: "cate1",
-      label: <Link to="/tivi">Tài khoản</Link>,
-    },
-    {
-      key: "cate2",
-      label: <Link to="/laptop">Đơn hàng</Link>,
-    },
-    {
-      key: "cate3",
-      label: <Link to="/dien-thoai">Cài đặt</Link>,
-    },
-    {
-      key: "cate4",
-      label: <Link to="/camera">Cài đặt</Link>,
-    },
-    {
-      key: "cate5",
-      label: <Link to="/pc">Đăng xuất</Link>,
-    },
-    {
-      key: "cate6",
-      label: <Link to="/tablet">Đơn hàng</Link>,
-    },
-    {
-      key: "cate7",
-      label: <Link to="/loa">Cài đặt</Link>,
-    },
-    {
-      key: "cate8",
-      label: <Link to="/tai-nghe">Cài đặt</Link>,
-    },
-    {
-      key: "cate9",
-      label: <Link to="/dong-ho">ĐỒng hồ</Link>,
-    },
-  ];
-
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    console.log("token: ", token);
     if (token) {
       try {
         // Kiểm tra token hợp lệ (ví dụ: dùng jwtDecode để giải mã)
@@ -139,7 +113,6 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
   const scrollToFooter = () => {
     document.querySelector("footer")?.scrollIntoView({ behavior: "smooth" });
   };
-
   return (
     <div className="bg-primary px-4 max-w-[1200px] mx-auto">
       {/* Logo */}

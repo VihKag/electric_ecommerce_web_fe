@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Breadcrumb, Button, Card, List, Skeleton } from "antd";
+import { Breadcrumb, Button, Skeleton } from "antd";
 import "antd/dist/reset.css";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowDownShortWide,
   faArrowDownWideShort,
-  faEye,
-  faTag,
 } from "@fortawesome/free-solid-svg-icons";
 import { HomeOutlined } from "@ant-design/icons";
 import ProductCard from "../../../components/card/ProductCard";
@@ -139,10 +137,9 @@ export default function CategoryPage() {
 
   return (
     <div className="max-w-[1200px] container">
-      <div className="mb-2">
-        <Breadcrumb 
-        className="text-base font-medium"
-        separator=">"
+      <div className="my-2">
+        <Breadcrumb
+          className="text-base font-medium"
           items={[
             {
               href: "/",
@@ -172,7 +169,7 @@ export default function CategoryPage() {
                 return (
                   <button
                     key={brand._id}
-                    onClick={() =>handleBrandChange(brand.name)}
+                    onClick={() => handleBrandChange(brand.name)}
                     className="flex items-center hover:text-gray-900"
                   >
                     {/* Thêm thẻ div với nền trắng bao quanh ảnh */}
@@ -296,7 +293,7 @@ export default function CategoryPage() {
         <label className="text-lg text-text font-bold">Sắp xếp theo</label>
         <div className="flex justify-between items-center my-2">
           <div className="flex flex-wrap space-y-2 xs:space-y-0 xs:space-x-2">
-          <Button
+            <Button
               type="text"
               className={`${
                 searchParams.get("sort") === "price_desc"

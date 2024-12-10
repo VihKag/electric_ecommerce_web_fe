@@ -5,7 +5,6 @@ import ProductPage from "../../pages/client/product/Product";
 import CategoryPage from "../../pages/client/category/Category";
 import Home from "../../pages/client/home/Home";
 import ShoppingCart from "../../pages/client/cart/ShoppingCart";
-import Payment from "../../pages/client/payment/Payment";
 import UserDashboard from "../../pages/client/user/UserDashboard";
 import UserProfile from "../../pages/client/user/profile/UserProfile";
 import Order from "../../pages/client/user/orders/Orders";
@@ -17,6 +16,15 @@ import RestorePass from "../../pages/auth/RestorePass";
 import NotFound from "../../pages/NotFound";
 import SearchResultPage from "../../pages/client/product/SearchResultPage";
 import ChangePassword from "../../pages/auth/ChangePassword";
+import FooterContent from "../../components/footer/FooterContent";
+import AddressList from "../../pages/client/user/address/UserAddresses";
+import HelpPage from "../../pages/client/user/help/Help";
+import Checkout from "../../pages/client/checkout/Checkout";
+import OrderSuccess from "../../pages/client/Order/OrderFailure";
+import PaymentResult from "../../pages/client/payment/PaymentResult";
+import FailedOrderPage from "../../pages/client/Order/OrderFailure";
+import SuccessOrderPage from "../../pages/client/Order/OrderSuccess";
+import { ToastContainer } from "react-toastify";
 const ClientRoutes = memo(() => {
   const routes = [
     {
@@ -55,10 +63,10 @@ const ClientRoutes = memo(() => {
           path: "conact",
           element: <Contact />,
         },
-        {
-          path: "payment",
-          element: <Payment />,
-        },
+        // {
+        //   path: "payment",
+        //   element: <Payment />,
+        // },
         {
           path: "login",
           element: <Login />,
@@ -72,12 +80,28 @@ const ClientRoutes = memo(() => {
           element: <RestorePass />,
         },
         {
+          path: "checkout",
+          element: <Checkout />,
+        },
+        {
+          path: "/order/failed",
+          element: <FailedOrderPage />,
+        },
+        {
+          path: "/order/success",
+          element: <SuccessOrderPage />,
+        },
+        {
           path: "user",
           element: <UserDashboard />,
           children: [
             {
               path: "profile",
               element: <UserProfile />,
+            },
+            {
+              path: "help",
+              element: <HelpPage />,
             },
             {
               path: "orders",
@@ -87,15 +111,27 @@ const ClientRoutes = memo(() => {
               path: "order/:orderId",
               element: <OrderDetails />,
             },
+            {
+              path: "addresses",
+              element: <AddressList />, // Route chỉ cho phép người dùng đăng nhập vào
+            },
           ],
         },
         {
           path: `product/:productId`,
-          element: <ProductPage />, // Route cho category và productid
+          element: <ProductPage />,
         },
         {
-          path: `product/search`,
+          path: `search`,
           element: <SearchResultPage />,
+        },
+        {
+          path: "our/:page",
+          element: <FooterContent />,
+        },
+        {
+          path: "/order/success",
+          element: <OrderSuccess />,
         },
         {
           path: "*",
@@ -107,7 +143,11 @@ const ClientRoutes = memo(() => {
 
   const element = useRoutes(routes);
 
-  return <>{element}</>;
+  return (
+    <>
+      {element}
+    </>
+  );
 });
 
 export default ClientRoutes;

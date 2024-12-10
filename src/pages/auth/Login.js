@@ -57,31 +57,6 @@ function Login() {
       </div>
 
       <div className="max-w-[700px] min-w-[280px] mx-auto pb-10">
-        <div className="flex items-center gap-4 justify-center">
-          <button
-            onClick={() => toast.info("login")}
-            className="flex w-48 h-14 items-center justify-center gap-3.5 rounded-lg border-2 border-stroke bg-gray p-4 font-bold hover:bg-opacity-50"
-          >
-            <span>
-              <img src={LogoGG} alt="logo google" className="h-6" />
-            </span>
-            Google
-          </button>
-
-          <button className="flex w-48 h-14 items-center justify-center rounded-lg border-2 border-stroke bg-gray p-4 font-bold hover:bg-opacity-50">
-            <span>
-              <img src={LogoFb} alt="logo google" className="h-6" />
-            </span>
-            Facebook
-          </button>
-        </div>
-
-        <div className="gap-2 flex items-center mx-auto w-3/5 my-8">
-          <hr className="w-full h-[1.5px] bg-gray-300" />
-          hoặc
-          <hr className="w-full h-[1.5px] bg-gray-300" />
-        </div>
-
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Tài khoản */}
           <div className="mb-4">
