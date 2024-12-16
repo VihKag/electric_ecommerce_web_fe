@@ -14,11 +14,15 @@ export const clientLoginAsync = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authService.clientLogin(credentials);
-      console.log(response.data);
-      const { username, email, images, access_token, id, bonuspoint } = response.data.data;
-      console.log(username, email, images);
-      const status = response.status; // Lấy mã trạng thái HTTP
-      const user = { username: username, email, image: images, id: id , bonuspoint: bonuspoint};
+      // Check if response.data and response.data.data exist
+      if (!response.data || !response.data.data) {
+        throw new Error("Invalid response structure");
+      }
+
+      const { username, email, images, access_token, _id, bonuspoint } = response.data.data;
+
+      const status = response.status; // HTTP status code
+      const user = { username, email, image: images, id: _id, bonuspoint };
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
       console.log("access_token: ", access_token);
@@ -29,10 +33,10 @@ export const clientLoginAsync = createAsyncThunk(
         status, // Lấy mã trạng thái HTTP
       };
     } catch (error) {
-      return rejectWithValue({
-        message: error.response.data.message,
-        status: error.response.status, // Lấy mã trạng thái lỗi
-      });
+      console.log(error);
+      const message = error.response?.data?.message || "An error occurred";
+      const status = error.response?.status || 500; // Default to 500 if status is unavailable
+      return rejectWithValue({ message, status });
     }
   }
 );
@@ -43,10 +47,10 @@ export const  authJwtAsync = createAsyncThunk(
     try {
       const response = await authService.authToken(token);
       console.log(response.data);
-      const { username, email, images, access_token, id, bonuspoint } = response.data.data;
+      const { username, email, images, access_token, _id, bonuspoint } = response.data.data;
       console.log(username, email, images);
       const status = response.status; // Lấy mã trạng thái HTTP
-      const user = { username: username, email, image: images, id: id , bonuspoint: bonuspoint};
+      const user = { username: username, email, image: images, id: _id , bonuspoint: bonuspoint};
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
       console.log("access_token: ", access_token);

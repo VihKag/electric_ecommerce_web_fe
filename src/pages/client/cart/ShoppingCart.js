@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { updateCart } from "../../../redux/slices/cartSlice";
 import { nanoid } from "nanoid";
+import { message } from "antd";
 
 export default function ShoppingCart() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function ShoppingCart() {
   useEffect(() =>{
     if (!user) {
       navigate('/auth/login');
-      toast.info('Vui lòng đăng nhập!')
+      message.info('Vui lòng đăng nhập!')
     }
   },[])
   const cartData = useSelector((state) => state.cart);
@@ -56,12 +57,12 @@ export default function ShoppingCart() {
     
     const item = cartData.productItem.find((product) => product._id === id);
     if (!item) {
-      toast.warn(`${item}`)
+      message.warn(`${item}`)
       return;
     };
     console.log("item: ",item);
     if (!item) {
-      toast.warn('Vui lòng chọn sản phẩm thanh toán!')
+      message.warn('Vui lòng chọn sản phẩm thanh toán!')
       return;
     };
     const payload = {
@@ -110,7 +111,7 @@ export default function ShoppingCart() {
       navigate(`/checkout?ckt=${randomKey}`);
     } else {
       // Thông báo nếu không có sản phẩm nào được chọn
-      toast.info("Vui lòng chọn sản phẩm trước khi mua!");
+      message.info("Vui lòng chọn sản phẩm trước khi mua!");
     }
   };
 

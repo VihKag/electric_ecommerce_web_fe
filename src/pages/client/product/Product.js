@@ -4,7 +4,7 @@ import ThumbsGallery from "../../../components/thumbs/Thumbs";
 import ProductReviews from "../../../components/product/ProductPreviews";
 import ProductQuestions from "../../../components/product/ProductQuestions";
 import ProductDescription from "../../../components/product/ProductDescription";
-import { Breadcrumb, Modal } from "antd";
+import { Breadcrumb, message, Modal } from "antd";
 import { categoryService, productService } from "../../../services/apiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatCurrency } from "../../../utils/currencyUtils";
@@ -53,13 +53,13 @@ const ProductPage = () => {
       // Lưu vào sessionStorage với key là mã ngẫu nhiên
       sessionStorage.setItem(randomKey, JSON.stringify([orderItem]));
       if (!user) {
-        toast.info("Vui lòng đăng nhập để mua hàng!");
+        message.info("Vui lòng đăng nhập để mua hàng!");
         navigate("/auth/login");
         return;
       }
       navigate(`/checkout?ckt=${randomKey}`);
     } else {
-      toast.infor("Vui lòng chọn một loại sản phẩm trước khi mua!");
+      message.infor("Vui lòng chọn một loại sản phẩm trước khi mua!");
     }
   };
 
@@ -76,6 +76,7 @@ const ProductPage = () => {
       .unwrap()
       .then((updatedCart) => {
         console.log("Cập nhật giỏ hàng thành công:", updatedCart);
+        message.success("Cập nhật giỏ hàng thành công!");
       })
       .catch((error) => {
         console.error("Lỗi cập nhật giỏ hàng:", error);
@@ -255,31 +256,37 @@ const ProductPage = () => {
 
             {/* variants sản phẩm */}
             <div className="mb-2">
-              {/* Chọn bộ nhớ */}
+              {/* Chọn loại variants */}
               <div className="mb-2">
                 <div className="flex gap-2">
-                  {variants.map((variant, index) => (
-                    <button
-                      key={index}
-                      className={`px-4 py-1 border rounded font-medium ${
-                        selectedMemory === variant.memory
-                          ? "ring-primary ring-1"
-                          : "bg-white text-black"
-                      }`}
-                      onClick={() => {
-                        setSelectedMemory(variant.memory);
-                        const defaultColor = variant.variants[0];
-                        setSelectedColor(defaultColor.color);
-                        setSelectedVariant({
-                          memory: variant.memory,
-                          color: defaultColor.color,
-                          variant: defaultColor,
-                        });
-                      }}
-                    >
-                      {variant.memory}
-                    </button>
-                  ))}
+                  {variants?.length > 0
+                    ? variants.map(
+                        (variant, index) =>
+                          variant.memory ? ( // Kiểm tra nếu variant.memory tồn tại
+                            <button
+                              key={index}
+                              className={`px-4 py-1 border rounded font-medium ${
+                                selectedMemory === variant.memory
+                                  ? "ring-primary ring-1"
+                                  : "bg-white text-black"
+                              }`}
+                              onClick={() => {
+                                setSelectedMemory(variant.memory);
+                                const defaultColor = variant.variants[0];
+                                setSelectedColor(defaultColor.color);
+                                setSelectedVariant({
+                                  memory: variant.memory,
+                                  color: defaultColor.color,
+                                  variant: defaultColor,
+                                });
+                              }}
+                            >
+                              {variant.memory}
+                            </button>
+                          ) : null // Nếu không có variant.memory thì trả về null
+                      )
+                    : null}{" "}
+                  {/* Nếu không có variants thì trả về null */}
                 </div>
               </div>
 

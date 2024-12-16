@@ -4,6 +4,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useNavigation } from "react-router-dom";
 import { authService } from "../../services/apiService";
 import { toast } from "react-toastify";
+import { message } from "antd";
 export default function RestorePassword() {
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otpTimer, setOtpTimer] = useState(300); // 5 minutes = 300 seconds
@@ -46,8 +47,8 @@ export default function RestorePassword() {
         // OTP validated successfully
         setIsOtpModalOpen(false);
         setError((prev) => ({ ...prev, otp: null}));
-        toast.success(response.data.message);
-        navigate("/change-password", { state: { email } });
+        message.success(response.data.message);
+        navigate("/auth/change-password", { state: { email } });
       }
     } catch (error) {
       setError((prev) => ({...prev, otp: error.response.data.message}));

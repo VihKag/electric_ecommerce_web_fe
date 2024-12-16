@@ -21,10 +21,10 @@ import AddressList from "../../pages/client/user/address/UserAddresses";
 import HelpPage from "../../pages/client/user/help/Help";
 import Checkout from "../../pages/client/checkout/Checkout";
 import OrderSuccess from "../../pages/client/Order/OrderFailure";
-import PaymentResult from "../../pages/client/payment/PaymentResult";
 import FailedOrderPage from "../../pages/client/Order/OrderFailure";
 import SuccessOrderPage from "../../pages/client/Order/OrderSuccess";
-import { ToastContainer } from "react-toastify";
+import Wishlist from "../../pages/client/Wishlist/Wishlist";
+import UserInvoices from "../../pages/client/user/bill/Bill";
 const ClientRoutes = memo(() => {
   const routes = [
     {
@@ -92,6 +92,10 @@ const ClientRoutes = memo(() => {
           element: <SuccessOrderPage />,
         },
         {
+          path: "wishList",
+          element: <Wishlist />,
+        },
+        {
           path: "user",
           element: <UserDashboard />,
           children: [
@@ -100,8 +104,8 @@ const ClientRoutes = memo(() => {
               element: <UserProfile />,
             },
             {
-              path: "help",
-              element: <HelpPage />,
+              path: "bills",
+              element: <UserInvoices />,
             },
             {
               path: "orders",
@@ -143,11 +147,7 @@ const ClientRoutes = memo(() => {
 
   const element = useRoutes(routes);
 
-  return (
-    <>
-      {element}
-    </>
-  );
+  return <>{element}</>;
 });
 
 export default ClientRoutes;

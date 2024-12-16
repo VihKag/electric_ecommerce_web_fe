@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { clientLoginAsync } from "../../redux/slices/authSlice";
-import { Spin } from "antd";
+import { message, Spin } from "antd";
 import { fetchCart } from "../../redux/slices/cartSlice";
 function Login() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ function Login() {
     .unwrap() //  to extract the payload of a fulfilled action or to throw either the error
     .then((result)=>{
       if(result.status===200){
-        toast.success("Đăng nhập thành công!");
+        message.success("Đăng nhập thành công!");
         const user = JSON.parse(localStorage.getItem("user"));
         console.log(user);
         dispatch(fetchCart(user.id));
@@ -41,11 +41,11 @@ function Login() {
     .catch((error) => {
       // error contains the payload from the rejected action
       if (error.status === 404) {
-        toast.error("Tài khoản không tồn tại");
+        message.error("Tài khoản không tồn tại");
       } else if (error.status === 401) {
-        toast.error("Sai mật khẩu");
+        message.error("Sai mật khẩu");
       } else {
-        toast.error("Đăng nhập thất bại");
+        message.error("Đăng nhập thất bại");
       }
       console.log(error);
     });

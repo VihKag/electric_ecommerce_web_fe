@@ -1,9 +1,9 @@
 import React,{useState} from 'react'
 import { Card, Button, Tag, Modal, Rate, Input, Upload, Divider } from 'antd'
 import { PhoneOutlined, EnvironmentOutlined, UserOutlined,CameraOutlined } from '@ant-design/icons'
+import { useParams } from 'react-router-dom'
 const { TextArea } = Input
 export default function OrderDetails() {
-  
   const [isReviewModalVisible, setIsReviewModalVisible] = useState(false)
   const desc = ['Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Tuyệt vời'];
   const showReviewModal = () => {

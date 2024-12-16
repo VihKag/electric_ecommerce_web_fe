@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Form, List, Radio, Modal, Button } from "antd";
+import { Form, List, Radio, Modal, Button, message } from "antd";
 import {
   CloseOutlined,
   HomeOutlined,
@@ -10,6 +10,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import AddressModal from "../../../../components/modal/AddressModal";
+import { commonService } from "../../../../services/apiService";
 
 const AddressList = () => {
   const user = useSelector((state) => state.auth.user);
@@ -24,12 +25,10 @@ const AddressList = () => {
 
   const fetchAddresses = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:4000/address/${user.id}`
-      );
+      const response = await commonService.getAddresseByUserId(user.id);
       setAddresses(response.data.data);
     } catch (error) {
-      toast.error("Error loading addresses");
+      message.error("Error loading addresses");
     } finally {
       setLoading(false);
     }
@@ -37,15 +36,22 @@ const AddressList = () => {
 
   const handleSetDefault = async (id) => {
     try {
-      setAddresses((prev) =>
-        prev.map((addr) => ({
-          ...addr,
-          status: addr._id === id,
-        }))
-      );
-      toast.success("Default address updated");
+      const payload = {
+        addressId: id,
+        userId: user.id,
+      }
+      const response = await commonService.updateAddress(payload);
+      if(response.data.success){
+        setAddresses((prev) =>
+          prev.map((addr) => ({
+            ...addr,
+            status: addr._id === id,
+          }))
+        );
+        message.success("Cập nhật thành công!");
+      }
     } catch (error) {
-      toast.error("Failed to update default address");
+      message.error("Failed to update default address");
     }
   };
 
@@ -60,27 +66,21 @@ const AddressList = () => {
         status: true,
       };
 
-      const response = await axios.post(
-        "http://127.0.0.1:4000/address/create",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
+      const response = await commonService.createAddress(payload);
+      console.log(response.data);
       if (response.status === 200) {
-        toast.success("Địa chỉ đã được thêm thành công!");
+        message.success("Địa chỉ đã được thêm thành công!");
         form.resetFields();
         setIsModalOpen(false);
         fetchAddresses();
       }
     } catch (error) {
       if (error.response) {
-        toast.error(error.response.data.message || "Thêm địa chỉ thất bại!");
+        message.error(error.response.data.message || "Thêm địa chỉ thất bại!");
       } else if (error.request) {
-        toast.error("Không thể kết nối đến máy chủ!");
+        message.error("Không thể kết nối đến máy chủ!");
       } else {
-        toast.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+        message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
       }
       console.error(error);
     }
@@ -99,20 +99,18 @@ const AddressList = () => {
       cancelText: "Không",
       onOk: async () => {
         try {
-          const response = await axios.delete(
-            `http://127.0.0.1:4000/address/user/${user.id}/location/${addressId}`
-          );
+          const response = await commonService.deleteAddress(user.id,addressId);
           if (response.status === 200) {
-            toast.success("Địa chỉ đã được xóa thành công!");
+            message.success("Địa chỉ đã được xóa thành công!");
             fetchAddresses();
           }
         } catch (error) {
           if (error.response) {
-            toast.error(error.response.data.message || "Xóa địa chỉ thất bại!");
+            message.error(error.response.data.message || "Xóa địa chỉ thất bại!");
           } else if (error.request) {
-            toast.error("Không thể kết nối đến máy chủ!");
+            message.error("Không thể kết nối đến máy chủ!");
           } else {
-            toast.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+            message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
           }
         }
       },

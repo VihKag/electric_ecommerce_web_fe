@@ -44,7 +44,7 @@ function ClientLayout() {
             <Outlet />
           </main>
           {!isHideFooterPage && (
-            <footer className="border-t-2">
+            <footer className="border-t-2 relative">
               <Footer />
             </footer>
           )}

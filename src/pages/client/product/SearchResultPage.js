@@ -47,7 +47,7 @@ const SearchResultPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto mb-10">
       <h1 className="text-2xl font-semibold mb-4">
         Có <span className="text-primary">{allProducts.length}</span> kết quả tìm
         kiếm cho: "{keyword}"

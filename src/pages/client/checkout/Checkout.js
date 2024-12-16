@@ -9,6 +9,7 @@ import {
   List,
   Avatar,
   Spin,
+  message,
 } from "antd";
 import { CreditCardOutlined, DollarOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -16,6 +17,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import AddressModal from "../../../components/modal/AddressModal";
+import { commonService } from "../../../services/apiService";
 
 const { Title, Text } = Typography;
 
@@ -23,7 +25,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   if (!user) {
-    toast.info("Vui lòng đăng nhập!");
+    message.info("Vui lòng đăng nhập!");
     navigate("/auth/login");
   }
   const [form] = Form.useForm();
@@ -46,9 +48,7 @@ const Checkout = () => {
   // Fetch địa chỉ từ server (dùng useCallback để tránh khởi tạo lại hàm)
   const fetchAddresses = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:4000/address/${user.id}`
-      );
+      const response = await commonService.getAddresseByUserId(user.id);
       if (response.data.success) {
         setAddresses(response.data.data);
 
@@ -71,7 +71,7 @@ const Checkout = () => {
       if (totalAmount <= 0) throw new Error("Số tiền thanh toán không hợp lệ.");
 
       const response = await axios.post(
-        "http://127.0.0.1:4000/payment/create_payment_urlv2",
+        "https://techzone-2ow9.onrender.com/payment/create_payment_urlv2",
         { amount: totalAmount },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -84,7 +84,7 @@ const Checkout = () => {
         );
       }
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi xử lý thanh toán qua VNPAY.");
+      message.error("Đã xảy ra lỗi khi xử lý thanh toán qua VNPAY.");
       throw error;
     }
   }, [totalAmount]);
@@ -104,28 +104,15 @@ const Checkout = () => {
           name: user.username || "",
         },
       };
-
-      const response = await axios.post(
-        "http://127.0.0.1:4000/orders",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      if (response.data.success) {
+      sessionStorage.setItem(`order`, JSON.stringify(payload));
         if (paymentMethod === "vnpay") {
           const paymentUrl = await handleVNPAYPayment();
           if (paymentUrl) window.location.href = paymentUrl;
         } else if (paymentMethod === "cash") {
-          toast.success("Đặt hàng thành công!");
-          navigate("/order/success", { state: response.data.order });
+          navigate("/order/success");
         }
-      } else {
-        toast.error("Đặt hàng thất bại!");
-      }
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại!");
+      message.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại!");
     }
   }, [
     user,
@@ -186,27 +173,21 @@ const Checkout = () => {
         status: true,
       };
 
-      const response = await axios.post(
-        "http://127.0.0.1:4000/address/create",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await commonService.createAddress(payload);;
 
       if (response.status === 200) {
-        toast.success("Địa chỉ đã được thêm thành công!");
+        message.success("Địa chỉ đã được thêm thành công!");
         form.resetFields();
         setIsModalOpen(false);
         fetchAddresses();
       }
     } catch (error) {
       if (error.response) {
-        toast.error(error.response.data.message || "Thêm địa chỉ thất bại!");
+        message.error(error.response.data.message || "Thêm địa chỉ thất bại!");
       } else if (error.request) {
-        toast.error("Không thể kết nối đến máy chủ!");
+        message.error("Không thể kết nối đến máy chủ!");
       } else {
-        toast.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+        message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
       }
       console.error(error);
     }

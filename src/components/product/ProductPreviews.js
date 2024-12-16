@@ -1,6 +1,6 @@
 import { faStar, faStarHalfAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Avatar } from "antd";
+import { Avatar, message } from "antd";
 import { useEffect, useState } from "react";
 import { commonService } from "../../services/apiService";
 import { toast } from "react-toastify";
@@ -55,14 +55,14 @@ export default function ProductReviews({ productId }) {
 
   const handleAddComment = async () => {
     if (!newComment.trim() || newRating === 0) {
-      toast.info("Vui lòng điền đầy đủ thông tin.");
+      message.info("Vui lòng điền đầy đủ thông tin.");
       return;
     }
     const user = JSON.parse(localStorage.getItem("user"));
     console.log(user);
     if (!user) {
       {
-        toast.info("Vui lòng đăng nhập để đánh giá.");
+        message.info("Vui lòng đăng nhập để đánh giá.");
         return;
       }
     }
@@ -80,20 +80,20 @@ export default function ProductReviews({ productId }) {
       fetchReviews(productId);
       setNewComment("");
       setNewRating(0);
-      toast.success("Đã thêm bình luận thành công!");
+      message.success("Đã thêm bình luận thành công!");
     } catch (error) {
       // Kiểm tra nếu server trả về lỗi với response
       if (error.response) {
         console.error("Error response:", error.response.data.message);
-        toast.error(error.response.data.message || "Đã xảy ra lỗi!");
+        message.error(error.response.data.message || "Đã xảy ra lỗi!");
       } else if (error.request) {
         // Nếu không nhận được phản hồi từ server
         console.error("No response received:", error.request);
-        toast.error("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
+        message.error("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
       } else {
         // Lỗi khác (thường là lỗi logic code)
         console.error("Error:", error.message);
-        toast.error("Đã xảy ra lỗi không xác định.");
+        message.error("Đã xảy ra lỗi không xác định.");
       }
     }
   };

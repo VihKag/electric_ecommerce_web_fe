@@ -1,10 +1,12 @@
 import React from "react";
-import { Card, Rate } from "antd";
+import { Card, message, Rate } from "antd";
 import { faHeart, faStar, faStarHalf } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatCurrency } from "../../utils/currencyUtils";
 import { useNavigate } from "react-router-dom";
 import { convertToSlug } from "../../utils/convertUltils";
+import { useSelector } from "react-redux";
+import { commonService } from "../../services/apiService";
 export function StarRating({ rating, maxRating = 5 }) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
@@ -36,10 +38,33 @@ export function StarRating({ rating, maxRating = 5 }) {
   );
 }
 function ProductCard({ product }) {
+  const user = useSelector((state)=> state.auth.user);
   const navigate = useNavigate();
   const handleProductClick = (product) => {
     navigate(`/product/${product._id}`);
   };
+
+  const handleLikeClick = async(productId) => {
+    try {
+      if(!user){
+        message.info("Vui lòng đăng nhập!");
+        return;
+      }
+      const payload = { 
+        userId: user.id, 
+        productId: productId 
+      }
+      const response = await commonService.likeProduct(payload);
+      if(response.status === 200){
+        message.success(response.data.message);
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
 
   return (
     <>
@@ -91,6 +116,7 @@ function ProductCard({ product }) {
             className="flex items-center gap-1 hover:animate-blink z-40"
             onClick={(event) => {
               event.stopPropagation();
+              handleLikeClick(product._id);
             }}
           >
             <div className="font-semibold min-w-fit text-secondary">

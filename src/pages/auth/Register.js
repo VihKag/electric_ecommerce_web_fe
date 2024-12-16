@@ -8,6 +8,7 @@ import LogoFb from "../../assets/icon/logoFb.png";
 import { useForm } from "react-hook-form";
 import { authService } from "../../services/apiService";
 import { toast } from "react-toastify";
+import { message } from "antd";
 
 function Register() {
   const navigate = useNavigate();
@@ -39,37 +40,21 @@ function Register() {
     try {
       const response = await authService.register(userInfor);
       console.log("Register successful:", response.data);
-      toast.success("Đăng ký thành công!");
+      message.success("Đăng ký thành công!");
       navigate("/auth/login");
     } catch (error) {
       console.error("Register failed:", error);
-      toast.error("Đăng ký thất bại, vui lòng thử lại!");
+      message.error("Đăng ký thất bại, vui lòng thử lại!");
     }
   };
   const password = watch("password");
   return (
-    <>
+    <div className="mb-10">
       <div className="text-center my-6">
         <h2 className="text-2xl font-bold text-gray-800">Đăng ký</h2>
       </div>
 
       <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <div className="flex items-center gap-4 justify-center mb-6">
-          <button className="flex w-48 h-14 items-center justify-center gap-3.5 rounded-lg border-2 border-gray-300 bg-white font-bold hover:bg-gray-100">
-            <img src={LogoGG} alt="Google" className="h-6" />
-            Google
-          </button>
-          <button className="flex w-48 h-14 items-center justify-center rounded-lg border-2 border-gray-300 bg-white font-bold hover:bg-gray-100">
-            <img src={LogoFb} alt="Facebook" className="h-6" />
-            Facebook
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2 mb-8">
-          <hr className="w-full border-gray-300" />
-          hoặc
-          <hr className="w-full border-gray-300" />
-        </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Tên tài khoản */}
@@ -237,7 +222,7 @@ function Register() {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }
 

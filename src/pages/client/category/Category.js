@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Breadcrumb, Button, Skeleton } from "antd";
+import { Breadcrumb, Button, Skeleton, Pagination } from "antd";
 import "antd/dist/reset.css";
 import { useParams, useSearchParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +12,8 @@ import {
 import { HomeOutlined } from "@ant-design/icons";
 import ProductCard from "../../../components/card/ProductCard";
 import { categoryService } from "../../../services/apiService";
+import debounce from "lodash.debounce";
+import { ProductGroupSkeleton } from "../../../components/skeleton/HomeSkeleton";
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
@@ -24,6 +26,9 @@ export default function CategoryPage() {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [loading, setLoading] = useState(true); // Trạng thái loading cho sản phẩm
   const [openDropdown, setOpenDropdown] = useState(null); // Trạng thái lưu dropdown đang mở
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
+  const [totalItems, setTotalItems] = useState(0);
 
   const toggleFilter = (key, value) => {
     setSelectedFilters((prev) => {
@@ -40,17 +45,39 @@ export default function CategoryPage() {
   };
 
   useEffect(() => {
-    const params = new URLSearchParams();
-    Object.entries(selectedFilters).forEach(([key, values]) => {
-      if (Array.isArray(values)) {
-        // If the value is an array (filters like brand, specs), join them as a string
-        params.set(key, values.join(","));
+    const params = Object.fromEntries(searchParams.entries());
+    const updatedFilters = {};
+
+    // Convert URL params back into `selectedFilters`
+    for (const [key, value] of Object.entries(params)) {
+      if (["brand", "sort", "page", "minPrice", "maxPrice"].includes(key)) {
+        updatedFilters[key] = value; // Keep single value filters as is
       } else {
-        // For non-array values (like sort)
-        params.set(key, values);
+        updatedFilters[key] = value.split(","); // Convert comma-separated values to array
       }
-    });
-    setSearchParams(params);
+    }
+
+    setSelectedFilters(updatedFilters);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const debouncedUpdate = debounce(() => {
+      const params = new URLSearchParams();
+
+      Object.entries(selectedFilters).forEach(([key, values]) => {
+        if (Array.isArray(values) && values.length > 0) {
+          params.set(key, values.join(",")); // Nếu có giá trị, thêm vào params
+        } else if (!Array.isArray(values) && values) {
+          params.set(key, values); // Nếu là giá trị đơn (ví dụ như `sort`)
+        }
+        // Nếu không có giá trị, tự động bỏ qua key
+      });
+
+      setSearchParams(params);
+    }, 500); // Chỉ cập nhật sau 500ms khi người dùng dừng thao tác
+
+    debouncedUpdate();
+    return () => debouncedUpdate.cancel(); // Hủy debounce nếu component unmount
   }, [selectedFilters, setSearchParams]);
 
   const toggleDropdown = (key) => {
@@ -70,6 +97,7 @@ export default function CategoryPage() {
       setBrands(brandRes.data.data);
       setCategory(categoryRes.data.data);
       setFilterSpecsOptions(filterRes.data.data.filters);
+      setTotalItems(productRes.data.pagination.totalProducts);
     } catch (error) {
       console.error("Failed to fetch category data:", error);
     }
@@ -81,11 +109,7 @@ export default function CategoryPage() {
       const params = Object.fromEntries(searchParams.entries());
       const filters = {};
       for (const [key, value] of Object.entries(params)) {
-        if (
-          !["brand", "sort", "page", "limit", "minPrice", "maxPrice"].includes(
-            key
-          )
-        ) {
+        if (!["brand", "sort", "page", "minPrice", "maxPrice"].includes(key)) {
           filters[key] = value.split(",");
         }
       }
@@ -97,20 +121,22 @@ export default function CategoryPage() {
             ...filters,
             sort: params.sort || null,
             page: params.page || 1,
+            limit: pageSize,
             minPrice: params.minPrice || null,
             maxPrice: params.maxPrice || null,
-            limit: params.limit || null,
             brand: params.brand || null,
           },
         }
       );
       setProducts(response.data.data);
+      setTotalItems(response.data.pagination.totalProducts);
+      setCurrentPage(parseInt(params.page) || 1);
     } catch (error) {
       console.error("Failed to fetch filtered products:", error);
     } finally {
       setLoading(false);
     }
-  }, [categoryId, searchParams]);
+  }, [categoryId, searchParams, pageSize]);
 
   const handleSortChange = (sortValue) => {
     // Update the selectedFilters state with the new sort value
@@ -125,6 +151,14 @@ export default function CategoryPage() {
       ...prevFilters,
       brand: sortValue,
     }));
+  };
+
+  const handlePageChange = (page, pageSize) => {
+    setSelectedFilters((prevFilters) => ({
+      ...prevFilters,
+      page: page,
+    }));
+    setPageSize(pageSize);
   };
 
   useEffect(() => {
@@ -166,6 +200,9 @@ export default function CategoryPage() {
             <label className="text-lg text-text font-bold ">Thương hiệu</label>
             <div className="flex mb-4 max-w-[1200px] flex-wrap gap-4">
               {brands.map((brand, i) => {
+                if (!brand) {
+                  return null; // Bỏ qua brand nếu chưa có ảnh
+                }
                 return (
                   <button
                     key={brand._id}
@@ -325,6 +362,15 @@ export default function CategoryPage() {
         {/* Component ProductList */}
         <ProductList products={products} loading={loading} />
       </div>
+      <div className="flex justify-center my-6">
+        <Pagination
+          current={currentPage}
+          total={totalItems}
+          pageSize={pageSize}
+          onChange={handlePageChange}
+          showSizeChanger={false}
+        />
+      </div>
     </div>
   );
 }
@@ -332,7 +378,7 @@ const ProductList = ({ products, loading }) => {
   return (
     <div>
       {loading ? (
-        <Skeleton active />
+        [...Array(3)].map((_, index) => <ProductGroupSkeleton key={index} />)
       ) : (
         <div className="flex flex-wrap">
           {products.length === 0 ? (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Menu, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -49,10 +49,17 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
     setIsModalOpen(false);
     dispatch(resetCart());
     dispatch(logout()); // Gọi hành động logout để xóa dữ liệu và reset state
-    toast.info("Đăng xuất thành công!");
+    message.info("Đăng xuất thành công!");
     navigate("/"); // Chuyển hướng đến trang đăng nhập
   };
-
+  const handleToCart = () => {
+    if(!user){
+      message.info("Vui lòng đăng nhập");
+      navigate('/auth/login');
+      return;
+    }
+    navigate('/cart');
+  }
   // Hàm hủy bỏ logout
   const handleCancelLogout = () => {
     setIsModalOpen(false);
@@ -64,23 +71,19 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
   }));
   const userItems = [
     {
-      key: "0",
-      label: <Link to="/user">Tài khoản</Link>,
+      key: "user0",
+      label: <Link to="/user/profile">Tài khoản</Link>,
     },
     {
-      key: "1",
+      key: "user1",
       label: <Link to="user/orders">Đơn hàng</Link>,
     },
     {
-      key: "3",
-      label: <Link to="user/setting">Cài đặt</Link>,
-    },
-    {
-      key: "5",
+      key: "user2",
       type: "divider",
     },
     {
-      key: "6",
+      key: "user3",
       label: <div onClick={handleLogout}>Đăng xuất</div>,
     },
   ];
@@ -123,7 +126,7 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
         >
           <div className="text-xl text-white font-semibold sm:font-bold flex items-center gap-2">
             <img src={logoShop} alt="logo" className="size-8 sm:size-10" />
-            <div className="hidden xs:block min-w-fit">TechZone</div>
+            <div className="hidden xs:block min-w-fit">TecKZone</div>
           </div>
         </div>
 
@@ -191,7 +194,7 @@ function Header({ searchInput, setSearchInput, handleSearch }) {
           </button>
 
           <button
-            onClick={() => navigate("/cart")}
+            onClick={handleToCart}
             className="text-white flex items-center hover:bg-red-400 px-2 py-2 rounded-md bg-red-500"
           >
             <FontAwesomeIcon icon={faCartShopping} className="mr-1 size-5" />

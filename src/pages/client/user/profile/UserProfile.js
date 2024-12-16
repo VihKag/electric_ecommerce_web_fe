@@ -9,7 +9,7 @@ import {
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { commonService } from "../../../../services/apiService";
-import { Form, Modal, Select, App } from "antd";
+import { Form, Modal, Select, message } from "antd";
 import axios from "axios";
 import { toast } from "react-toastify";
 import AddressModal from "../../../../components/modal/AddressModal";
@@ -20,7 +20,6 @@ export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [addresses, setAddresses] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { message } = App.useApp();
   const user = JSON.parse(localStorage.getItem("user"));
   const dispatch = useDispatch();
   const {
@@ -47,7 +46,7 @@ export default function UserProfile() {
 
   const getAddressByUserId = async () => {
     try {
-      const response = await commonService.getAddresseByUserId(user.id);
+      const response = await commonService.getAddresseByUserIdDefault(user.id);
       console.log("addresses: ", response.data.data);
       setAddresses(response.data.data);
     } catch (error) {
@@ -65,19 +64,9 @@ export default function UserProfile() {
         phone: values.phone,
         status: true,
       };
-
-      const response = await axios.post(
-        "http://127.0.0.1:4000/address/create",
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      const response = await commonService.createAddress(payload);
       if (response.status === 200) {
-        toast.success("Địa chỉ đã được thêm thành công!");
+        message.success("Địa chỉ đã được thêm thành công!");
         form.resetFields();
         setIsModalOpen(false);
         // Reload lại trang
@@ -86,13 +75,13 @@ export default function UserProfile() {
     } catch (error) {
       if (error.response) {
         // Lỗi từ server (có phản hồi)
-        toast.error(error.response.data.message || "Thêm địa chỉ thất bại!");
+        message.error(error.response.data.message || "Thêm địa chỉ thất bại!");
       } else if (error.request) {
         // Lỗi không nhận được phản hồi từ server
-        toast.error("Không thể kết nối đến máy chủ!");
+        message.error("Không thể kết nối đến máy chủ!");
       } else {
         // Lỗi khác
-        toast.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+        message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
       }
       console.error(error);
     }
@@ -112,22 +101,20 @@ export default function UserProfile() {
       cancelText: "Không",
       onOk: async () => {
         try {
-          const response = await axios.delete(
-            `http://127.0.0.1:4000/address/user/${user.id}/location/${addressId}`
-          );
+          const response = await commonService.deleteAddress(user.id,addressId);
           if (response.status === 200) {
-            toast.success("Địa chỉ đã được xóa thành công!");
+            message.success("Địa chỉ đã được xóa thành công!");
             getAddressByUserId(); // Cập nhật lại danh sách địa chỉ sau khi xóa
           }
         } catch (error) {
           if (error.response) {
-            toast.error(
+            message.error(
               error.response.data.message || "Xóa địa chỉ thất bại!"
             );
           } else if (error.request) {
-            toast.error("Không thể kết nối đến máy chủ!");
+            message.error("Không thể kết nối đến máy chủ!");
           } else {
-            toast.error("Đã xảy ra lỗi. Vui lòng thử lại!");
+            message.error("Đã xảy ra lỗi. Vui lòng thử lại!");
           }
         }
       },

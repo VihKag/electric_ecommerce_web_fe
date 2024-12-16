@@ -2,14 +2,13 @@ import { faEye, faEyeSlash, faUser } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import LogoGG from "../../assets/icon/logoGG.png";
-import LogoFb from "../../assets/icon/logoFb.png";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { clientLoginAsync } from "../../redux/slices/authSlice";
-import { Spin } from "antd";
+import { useDispatch } from "react-redux";
+import { clientLoginAsync, clientResetPassword } from "../../redux/slices/authSlice";
+import { message, Spin } from "antd";
 import { fetchCart } from "../../redux/slices/cartSlice";
+import { authService } from "../../services/apiService";
 function ChangePassword() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,29 +36,25 @@ function ChangePassword() {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit = (data) => {
-    dispatch(clientLoginAsync(data))
-      .unwrap() //  to extract the payload of a fulfilled action or to throw either the error
-      .then((result) => {
-        if (result.status === 200) {
-          toast.success("Đổi mật khẩu thành công!");
-          const user = JSON.parse(localStorage.getItem("user"));
-          console.log(user);
-          dispatch(fetchCart(user.id));
-          navigate("/auth/login");
-        }
-      })
-      .catch((error) => {
-        // error contains the payload from the rejected action
-        if (error.status === 404) {
-          toast.error("Tài khoản không tồn tại");
-        } else if (error.status === 401) {
-          toast.error("Sai mật khẩu");
-        } else {
-          toast.error("Đăng nhập thất bại");
-        }
+  const onSubmit = async (data) => {
+    try {
+      const result = await authService.resetPassword(data);
+      if (result.status === 200) {
+        message.success("Đổi mật khẩu thành công!");
+        navigate("/auth/login");
+      }
+    } catch (error) {
+      // Xử lý lỗi từ rejectWithValue
+      if (error.status === 404) {
+        message.error("Tài khoản không tồn tại");
+      } else if (error.status === 401) {
+        message.error("Sai mật khẩu");
+      } else {
+        message.error("Đăng nhập thất bại");
         console.log(error);
-      });
+      }
+      console.log(error);
+    }
   };
   return (
     <>
@@ -109,8 +104,8 @@ function ChangePassword() {
                 {...register("password", {
                   required: "Mật khẩu là bắt buộc",
                   minLength: {
-                    value: 6,
-                    message: "Mật khẩu phải chứa ít nhất 6 ký tự",
+                    value: 8,
+                    message: "Mật khẩu phải chứa ít nhất 8 ký tự",
                   },
                 })}
               />
