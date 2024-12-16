@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, Upload, message, Select } from "antd";
+import { Modal, Form, Input, Upload, message, Select, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { adminService, productService } from "../../services/apiService";
 import { toast } from "react-toastify";
@@ -38,18 +38,20 @@ const UpdateProductModal = ({ visible, onCancel, onUpdate, product }) => {
   const handleUpdate = async (values) => {
     try {
       const formData = new FormData();
-      formData.append("idproduct", product.productId._id);
+      formData.append("idproduct", product.productId);
       formData.append("name", values.name);
       formData.append("category", values.category);
       formData.append("brand", values.brand);
       formData.append("description", values.description);
-
+      formData.append("status", values.status);
       fileList.forEach((file) => {
         formData.append("images", file.originFileObj);
       });
-
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
       await productService.updateProduct(formData);
-      toast.success("Product updated successfully");
+      message.success("Product updated successfully");
       onUpdate();
       onCancel();
     } catch (error) {
@@ -64,6 +66,7 @@ const UpdateProductModal = ({ visible, onCancel, onUpdate, product }) => {
 
   return (
     <Modal
+    className="mt-24"
       visible={visible}
       title="CẬP NHẬT SẢN PHẨM"
       onCancel={onCancel}
@@ -73,10 +76,11 @@ const UpdateProductModal = ({ visible, onCancel, onUpdate, product }) => {
         form={form}
         layout="vertical"
         initialValues={{
-          name: product.productId?.name,
-          category: product.productId?.category?.name,
-          brand: product.productId?.brand?.name,
-          description: product.productId?.description,
+          name: product?.name,
+          category: product?.category?._id,
+          brand: product?.brand?._id,
+          description: product?.description,
+          status: product?.status
         }}
         onFinish={handleUpdate}
       >
@@ -86,9 +90,9 @@ const UpdateProductModal = ({ visible, onCancel, onUpdate, product }) => {
         <Form.Item name="category" label="Category">
           <Select placeholder="Chọn danh mục">
             {categories?.map((cate) => (
-              <Option key={cate._id} value={cate._id}>
+              <Select.Option key={cate._id}  value={cate._id}>
                 {cate.name}
-              </Option>
+              </Select.Option>
             ))}
           </Select>
         </Form.Item>
@@ -116,6 +120,9 @@ const UpdateProductModal = ({ visible, onCancel, onUpdate, product }) => {
               <div style={{ marginTop: 8 }}>Upload</div>
             </div>
           </Upload>
+        </Form.Item>
+        <Form.Item name="status" label="Status" valuePropName="checked">
+          <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
         </Form.Item>
       </Form>
     </Modal>

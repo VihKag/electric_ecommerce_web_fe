@@ -1,4 +1,4 @@
-import { Input, Modal, Select, Form } from "antd";
+import { Input, Modal, Select, Form, message } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -23,7 +23,7 @@ const AddressModal = ({ form, isModalOpen, handleCancel, handleOk }) => {
         setProvinces(response.data.results);
       }
     } catch (error) {
-      toast.error("Không thể tải danh sách địa chỉ!");
+      message.error("Không thể tải danh sách địa chỉ!");
       console.error(error);
     } finally {
       setLoading(false);
@@ -43,7 +43,7 @@ const AddressModal = ({ form, isModalOpen, handleCancel, handleOk }) => {
         setDistricts(response.data.results || []);
       }
     } catch (error) {
-      toast.error("Không thể tải danh sách quận/huyện!");
+      message.error("Không thể tải danh sách quận/huyện!");
       console.error(error);
     } finally {
       setLoadingDistricts(false);
@@ -63,7 +63,7 @@ const AddressModal = ({ form, isModalOpen, handleCancel, handleOk }) => {
         setWards(response.data.results || []);
       }
     } catch (error) {
-      toast.error("Không thể tải danh sách phường/xã!");
+      message.error("Không thể tải danh sách phường/xã!");
       console.error(error);
     } finally {
       setLoadingWards(false);

@@ -19,7 +19,7 @@ const UpdateCategoryModal = ({ visible, onCancel, onUpdate, category }) => {
       });
 
       await productService.updateProduct(formData);
-      toast.success("Product updated successfully");
+      message.success("Product updated successfully");
       onUpdate();
       onCancel();
     } catch (error) {

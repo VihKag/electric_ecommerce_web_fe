@@ -17,11 +17,11 @@ const UpdateSpecificationsModal = ({
   return (
     <Modal
       visible={visible}
-      title="Update Specifications"
+      title="CẬP NHẬT THÔNG SỐ KĨ THUẬT"
       onCancel={onCancel}
       onOk={() => form.submit()}
       width={800}
-      bodyStyle={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}
+      bodyStyle={{ maxHeight: 'calc(100vh - 350px)', overflowY: 'auto' }}
     >
       <Form
         form={form}
