@@ -140,7 +140,7 @@ export const filtersService = {
 }
 
 export const adminService = {
-    getAllProducts: () => employeeServiceApi.get('/employees/products'),
+    getAllProducts: (config) => employeeServiceApi.get('/employees/products',config),
     getAllProductOnSales: (config) => employeeServiceApi.get('/employees/products/sales',config),
     getProductById: (id) => employeeServiceApi.get(`/employees/products/${id}`),
     getCategories: (config) => employeeServiceApi.get('/employees/categories',config),

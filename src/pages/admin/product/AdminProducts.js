@@ -30,7 +30,7 @@ import debounce from "lodash.debounce";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { brandService, categoryService, productService } from "../../../services/apiService";
+import { adminService, brandService, categoryService, productService } from "../../../services/apiService";
 
 const { RangePicker } = DatePicker;
 export default function AdminProducts() {
@@ -152,22 +152,33 @@ export default function AdminProducts() {
   const fetchProducts = async (params = {}) => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        "http://localhost:4000/employees/products",
-        {
-          params: {
-            page: pagination.current,
-            limit: pagination.pageSize,
-            name: searchKeyword, // Không truyền tham số nếu không có giá trị
-            category: selectedCategory,
-            brand: selectedBrand,
-            startDate: dateRange?.[0]?.toISOString(),
-            endDate: dateRange?.[1]?.toISOString(),
-            ...params,
-          },
-        }
-      );
-
+      // const response = await axios.get(
+      //   "http://localhost:4000/employees/products",
+      //   {
+      //     params: {
+      //       page: pagination.current,
+      //       limit: pagination.pageSize,
+      //       name: searchKeyword, // Không truyền tham số nếu không có giá trị
+      //       category: selectedCategory,
+      //       brand: selectedBrand,
+      //       startDate: dateRange?.[0]?.toISOString(),
+      //       endDate: dateRange?.[1]?.toISOString(),
+      //       ...params,
+      //     },
+      //   }
+      // );
+      const response = await adminService.getAllProducts({
+            params: {
+              page: pagination.current,
+              limit: pagination.pageSize,
+              name: searchKeyword, // Không truyền tham số nếu không có giá trị
+              category: selectedCategory,
+              brand: selectedBrand,
+              startDate: dateRange?.[0]?.toISOString(),
+              endDate: dateRange?.[1]?.toISOString(),
+              ...params,
+            },
+          })
       const { data } = response.data; // response.data.data chứa kết quả trả về
       setProducts(data.products);
       setPagination((prev) => ({
