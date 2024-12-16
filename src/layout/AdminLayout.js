@@ -3,15 +3,14 @@ import {
   Avatar,
   Badge,
   Button,
-  Divider,
   Dropdown,
   Layout,
   Menu,
-  Space,
+  message,
   Spin,
 } from "antd";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import Icon, {
+import {
   UserOutlined,
   ShoppingCartOutlined,
   ShoppingOutlined,
@@ -20,17 +19,19 @@ import Icon, {
   SettingOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  BellTwoTone,
   PoweroffOutlined,
   PieChartOutlined,
   MedicineBoxOutlined,
   UnorderedListOutlined,
   TagsOutlined,
   TeamOutlined,
+  FilterOutlined,
+  CodeSandboxOutlined,
+  CommentOutlined,
+  BorderOutlined,
 } from "@ant-design/icons";
 import logoShop from "../assets/icon/logoShop.png";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { logout } from "../redux/slices/adminSlice";
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -52,6 +53,9 @@ export default function AdminLayout() {
       ["/admin/orders", "8"],
       ["/admin/bills", "9"],
       ["/admin/reviews", "10"],
+      ["/admin/pos", "11"],
+      ["/admin/filters", "12"],
+      ["/admin/banners", "13"]
     ]);
   }, []);
   // Tự động thu gọn sidebar khi màn hình nhỏ hơn md
@@ -68,7 +72,7 @@ export default function AdminLayout() {
   // Kiểm tra nếu user null và chuyển hướng đến trang đăng nhập
   useEffect(() => {
     if (!user) {
-      toast.error(
+      message.error(
         "Bạn chưa đăng nhập! Vui lòng đăng nhập để truy cập trang quản trị."
       );
       navigate("/login"); // Điều hướng đến trang login
@@ -76,7 +80,7 @@ export default function AdminLayout() {
   }, [user, navigate]);
   const handleLogout = () =>{
     dispatch(logout);
-    toast.info("Đăng xuất thành công!");
+    message.info("Đăng xuất thành công!");
     navigate("/login");
     
   }
@@ -138,7 +142,7 @@ export default function AdminLayout() {
                   : `opacity-100 transition-opacity`
               }
             >
-              TeckZone
+              TecKZone
             </span>
           </div>
           <Menu
@@ -199,7 +203,7 @@ export default function AdminLayout() {
                   },
                   {
                     key: "10",
-                    icon: <FileOutlined />,
+                    icon: <CommentOutlined />,
                     label: <Link to="/admin/reviews">Reviews</Link>,
                   },
                 ],
@@ -215,10 +219,20 @@ export default function AdminLayout() {
                 type: "group",
                 children: [
                   {
-                    key: "log",
-                    icon: <FileOutlined />,
+                    key: "11",
+                    icon: <CodeSandboxOutlined />,
                     label: <Link to="/admin/pos">POS</Link>,
                   },
+                  {
+                    key: "12",
+                    icon: <FilterOutlined />,
+                    label: <Link to="/admin/filters">Filters</Link>,
+                  },
+                  {
+                    key: "13",
+                    icon: <BorderOutlined/>,
+                    label: <Link to="/admin/banners">Banner</Link>,
+                  }
                 ],
               },
               {
@@ -245,9 +259,7 @@ export default function AdminLayout() {
             <div className="px-6 flex items-center justify-center">
               <div className="mr-4 p-2" color="default" variant="text">
                 <div className="flex items-center rounded-full py-2 px-2 hover:bg-gray-300 hover:cursor-pointer active:bg-gray-100 focus:bg-gray-300 selection:bg-gray-300">
-                  <Badge count={100}>
-                    <BellTwoTone className="text-3xl" />
-                  </Badge>
+
                 </div>
               </div>
               <Dropdown
@@ -264,7 +276,7 @@ export default function AdminLayout() {
               </Dropdown>
             </div>
           </Header>
-          <Content className="px-0">
+          <Content className="px-0 overflow-y-auto">
             <div className="px-6 py-2 min-h-[360px] site-layout-background">
               <Outlet />
             </div>

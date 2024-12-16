@@ -102,7 +102,7 @@ const CreateProduct = () => {
   return (
     <div className="mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Thêm sản phẩm mới</h1>
-      <Form
+      <Form 
         form={form}
         name="productForm"
         onFinish={onFinish}

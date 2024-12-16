@@ -1,5 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Table, Button, Space, Image, Input, Popover, Tag, Switch, Modal } from "antd";
+import {
+  Table,
+  Button,
+  Space,
+  Image,
+  Input,
+  Popover,
+  Tag,
+  Switch,
+  Modal,
+  Select,
+  DatePicker,
+  message,
+} from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -17,15 +30,22 @@ import debounce from "lodash.debounce";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { productService } from "../../../services/apiService";
+import { brandService, categoryService, productService } from "../../../services/apiService";
 
+const { RangePicker } = DatePicker;
 export default function AdminProducts() {
   const navigate = useNavigate();
   const location = useLocation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [filterConditions, setFilterConditions] = useState({});
+  // Dropdown options (you'd typically fetch these from an API)
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [dateRange, setDateRange] = useState(null);
+
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -68,16 +88,6 @@ export default function AdminProducts() {
       key: "brand",
       sorter: true,
       render: (brand) => brand?.name || "N/A",
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      width: 600,
-      render: (description) =>
-        description?.length > 200
-          ? `${description.substring(0, 200)}...`
-          : description || "No Description",
     },
     {
       title: "Rating",
@@ -127,77 +137,104 @@ export default function AdminProducts() {
             onClick={() => navigate(`${location.pathname}/${record._id}`)}
             icon={<EditOutlined />}
           />
-          <Button 
+          <Button
             onClick={() => handleDeleteProduct(record._id)}
-          type="default" danger icon={<DeleteOutlined />} />
+            type="default"
+            danger
+            icon={<DeleteOutlined />}
+          />
         </Space>
       ),
     },
   ];
 
   // Gọi API để lấy danh sách sản phẩm
-  const fetchProducts = async ({
-    page = pagination.current,
-    pageSize = pagination.pageSize,
-    search = "",
-    category,
-    brand,
-  } = {}) => {
+  const fetchProducts = async (params = {}) => {
     setLoading(true);
     try {
       const response = await axios.get(
         "http://localhost:4000/employees/products",
         {
           params: {
-            page,
-            limit: pageSize,
-            name: search || undefined, // Không truyền tham số nếu không có giá trị
-            category,
-            brand,
+            page: pagination.current,
+            limit: pagination.pageSize,
+            name: searchKeyword, // Không truyền tham số nếu không có giá trị
+            category: selectedCategory,
+            brand: selectedBrand,
+            startDate: dateRange?.[0]?.toISOString(),
+            endDate: dateRange?.[1]?.toISOString(),
+            ...params,
           },
         }
       );
 
       const { data } = response.data; // response.data.data chứa kết quả trả về
       setProducts(data.products);
-      setPagination({
-        current: data.currentPage,
-        pageSize,
+      setPagination((prev) => ({
+        ...prev,
         total: data.totalProducts,
-      });
+      }));
     } catch (error) {
-      toast.error("Failed to fetch products!");
+      message.error("Failed to fetch products!");
     } finally {
       setLoading(false);
     }
   };
 
-  // Xử lý thay đổi phân trang
-  const handleTableChange = (pagination) => {
+  const handleTableChange = (newPagination, filters, sorter) => {
+    setPagination((prev) => ({
+      ...prev,
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+    }));
+  
+    // Fetch products with updated pagination, filters, and sorter
     fetchProducts({
-      page: pagination.current,
-      pageSize: pagination.pageSize,
-      search: searchKeyword,
-      category: filterConditions.category,
-      brand: filterConditions.brand,
+      page: newPagination.current,
+      limit: newPagination.pageSize,
+      sortBy: sorter.field || "createdAt",
+      order: sorter.order === "descend" ? "desc" : "asc",
+      name: searchKeyword,
+      category: selectedCategory,
+      brand: selectedBrand,
+      startDate: dateRange?.[0]?.toISOString(),
+      endDate: dateRange?.[1]?.toISOString(),
     });
   };
+  
   const handleSearch = debounce((searchValue) => {
+    setPagination(prev => ({ ...prev, current: 1 }));
     fetchProducts({
-      search: searchValue,
-      page: 1, // Reset về trang 1 khi tìm kiếm
-      category: filterConditions.category,
-      brand: filterConditions.brand,
     });
-  }, 500); // 300ms delay
-  // Ví dụ: Gọi fetchProducts với danh mục hoặc thương hiệu
-  const handleFilter = (filters) => {
-    fetchProducts({
-      category: filters.category,
-      brand: filters.brand,
-      page: 1, // Reset về trang 1 khi lọc
-    });
+  }, 300); // 300ms delay
+
+  const handleReset = () => {
+    setSearchKeyword("");
+    setSelectedCategory(null);
+    setSelectedBrand(null);
+    setDateRange(null);
+    setPagination((prev) => ({ ...prev, current: 1 }));
+    fetchProducts();
   };
+
+  // Fetch initial data
+  useEffect(() => {
+    fetchProducts();
+    // Fetch categories and brands
+    const fetchDropdownData = async () => {
+      try {
+        const [categoriesRes, brandsRes] = await Promise.all([
+          categoryService.getAllCategories(),
+          brandService.getAllBrand(),
+        ]);
+        setCategories(categoriesRes.data.data);
+        setBrands(brandsRes.data.data);
+      } catch (error) {
+        message.error("Failed to fetch dropdown data");
+      }
+    };
+    fetchDropdownData();
+  }, []);
   // Lấy dữ liệu lần đầu
   useEffect(() => {
     fetchProducts();
@@ -273,14 +310,16 @@ export default function AdminProducts() {
       formdata.append("status", newStatus);
       formdata.append("idproduct", productId);
       await productService.updateProduct(formdata);
-      toast.success("Cập nhật thành công!");
+      message.success("Cập nhật thành công!");
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
-          product._id === productId ? { ...product, status: newStatus } : product
+          product._id === productId
+            ? { ...product, status: newStatus }
+            : product
         )
       );
     } catch (error) {
-      toast.error("Cập nhật thất bại!");
+      message.error("Cập nhật thất bại!");
     } finally {
       setLoading(false);
     }
@@ -296,19 +335,19 @@ export default function AdminProducts() {
         try {
           setLoading(true);
           await productService.deleteProduct(productId);
-          toast.success("Xóa thành công!");
+          message.success("Xóa thành công!");
           setProducts((prevProducts) =>
-            prevProducts.filter((product) => product._id!== productId)
+            prevProducts.filter((product) => product._id !== productId)
           );
         } catch (error) {
           console.log(error);
-          toast.error("Xóa thất bại!");
+          message.error("Xóa thất bại!");
         } finally {
           setLoading(false);
         }
       },
     });
-  }
+  };
   return (
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0 flex-wrap">
@@ -340,7 +379,7 @@ export default function AdminProducts() {
           <Button
             type="primary"
             className="bg-blue-600"
-            onClick={() => toast.info("TÍnh năng đang phát triển!")}
+            onClick={() => message.info("TÍnh năng đang phát triển!")}
             icon={<ImportOutlined />}
           >
             Import Products
@@ -348,16 +387,58 @@ export default function AdminProducts() {
         </Space>
       </div>
 
-      <div className="flex justify-between mb-6 flex-wrap">
-        <Input
-          placeholder="Search"
-          onChange={(e) => {
-            setSearchKeyword(e.target.value);
-            handleSearch(e.target.value); // Gọi hàm debounce
-          }}
-          prefix={<SearchOutlined />}
-          style={{ width: 300 }}
-        />
+      <div className="flex justify-between mb-6 flex-wrap items-center">
+        <div>
+          <Input
+            placeholder="Search"
+            onChange={
+              (e) => setSearchKeyword(e.target.value) // Gọi hàm debounce
+            }
+            onPressEnter={(e) => handleSearch(e.target.value)}
+            prefix={<SearchOutlined />}
+            style={{ width: 300 }}
+          />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Select
+            placeholder="Chọn danh mục"
+            className="w-1/4"
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+            allowClear
+          >
+            {categories.map((cat) => (
+              <Select.Option key={cat._id} value={cat._id}>
+                {cat.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            placeholder="Chọn thương hiệu"
+            className="w-1/4"
+            value={selectedBrand}
+            onChange={setSelectedBrand}
+            allowClear
+          >
+            {brands.map((brand) => (
+              <Select.Option key={brand._id} value={brand._id}>
+                {brand.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <RangePicker className="w-1/4" onChange={setDateRange} />
+          <div className="flex space-x-2">
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={handleSearch}
+            >
+              Tìm kiếm
+            </Button>
+            <Button onClick={handleReset}>Đặt lại</Button>
+          </div>
+        </div>
       </div>
 
       <Table
@@ -371,10 +452,12 @@ export default function AdminProducts() {
           pageSizeOptions: ["5", "10", "20", "50"],
           showSizeChanger: true,
           showQuickJumper: true,
+          showTotal: (total) => `Total ${total} items`,
         }}
         onChange={handleTableChange}
         loading={loading}
-        scroll={{ x: 1200 }} 
+        className="bg-white rounded shadow"
+        scroll={{ x: 1200 }}
       />
     </div>
   );

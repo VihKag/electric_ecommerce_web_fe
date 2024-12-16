@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { adminService } from "../../../services/apiService";
 
 // Đảm bảo các phần của Chart.js được đăng ký
 ChartJS.register(
@@ -31,9 +32,7 @@ const Statistics = () => {
 
   const fetchStatistics = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:4000/orders/statisticProduct"
-      );
+      const response = await adminService.getStatisticOrders();
       setStatistics(response.data.data);
     } catch (error) {
       console.error("Error fetching statistics", error);

@@ -11,7 +11,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { UploadOutlined } from "@ant-design/icons";
-import { commonService } from "../../../services/apiService";
+import { bannerService, commonService } from "../../../services/apiService";
 const AdminBanner = () => {
   const [banners, setBanners] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +22,7 @@ const AdminBanner = () => {
   // Fetch banners
   const fetchBanners = async () => {
     try {
-      const { data } = await axios.get("http://127.0.0.1:4000/banners");
+      const { data } = await bannerService.getBanners();
       setBanners(data.data);
     } catch (err) {
       message.error("Failed to fetch banners");
@@ -46,15 +46,17 @@ const AdminBanner = () => {
       formData.append("idbanner", editingBanner?._id);
       if (editingBanner) {
         // Update banner
-        await axios.put(`http://127.0.0.1:4000/banners`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        // await axios.put(`http://127.0.0.1:4000/banners`, formData, {
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // });
+        await bannerService.updateBanners(formData);
         message.success("Banner updated successfully");
       } else {
         // Add new banner
-        await axios.post("http://127.0.0.1:4000/banners/create", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        // await axios.post("http://127.0.0.1:4000/banners/create", formData, {
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // });
+        await bannerService.createBanners(formData);
         message.success("Banner added successfully");
       }
       setFileList([]);

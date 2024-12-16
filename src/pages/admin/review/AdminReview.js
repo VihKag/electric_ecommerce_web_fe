@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Input, Pagination, Spin, Space, Button, Modal } from "antd";
+import { Table, Input, Pagination, Spin, Space, Button, Modal, message } from "antd";
 import axios from "axios";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { adminService } from "../../../services/apiService";
@@ -16,7 +16,7 @@ const AdminReviews = () => {
   const fetchReviews = async (page, pageSize, search) => {
     setLoading(true);
     try {
-      const { data } = await axios.get("http://127.0.0.1:4000/reviews", {
+      const { data } = await adminService.getReviews({
         params: {
           page,
           pageSize,
@@ -88,34 +88,34 @@ const AdminReviews = () => {
       ),
     },
   ];
-const handleDelete = (id) => {
+  const handleDelete = (id) => {
     Modal.confirm({
       title: "Bạn có chắc muốn xóa danh mục này?",
       onOk: async () => {
         try {
           adminService.deleteReview(id);
-          toast.success("Xóa thành công");
+          message.success("Xóa thành công");
           setReviews((prevCategories) =>
             prevCategories.filter((category) => category._id !== id)
           );
         } catch (error) {
           console.log(error);
-          toast.error("Xóa thất bại");
+          message.error("Xóa thất bại");
         }
       },
     });
   };
-    // Handle search input change
-    const handleSearchInputChange = (e) => {
-        setSearchInput(e.target.value);
-      };
-    
-      // Handle search action
-      const handleSearch = () => {
-        setSearch(searchInput);
-        setPage(1); // Reset to the first page when searching
-        fetchReviews(1, pageSize, searchInput);
-      };
+  // Handle search input change
+  const handleSearchInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  // Handle search action
+  const handleSearch = () => {
+    setSearch(searchInput);
+    setPage(1); // Reset to the first page when searching
+    fetchReviews(1, pageSize, searchInput);
+  };
   // Fetch reviews when component mounts or dependency changes
   React.useEffect(() => {
     fetchReviews(page, pageSize, search);
@@ -125,15 +125,16 @@ const handleDelete = (id) => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Quản lí đánh giá</h1>
-        <Input
-            placeholder="Search reviews"
-            value={searchInput}
-            onChange={handleSearchInputChange}
-            className="w-60"
-            onPressEnter={handleSearch} // Allow search on Enter key
-          />
       </div>
-
+      <div className="mb-4">
+        <Input
+          placeholder="Search reviews"
+          value={searchInput}
+          onChange={handleSearchInputChange}
+          className="w-60"
+          onPressEnter={handleSearch} // Allow search on Enter key
+        />
+      </div>
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <Spin size="large" />

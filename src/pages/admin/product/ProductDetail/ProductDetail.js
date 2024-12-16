@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Breadcrumb, Button, Descriptions, Image, Tabs, Tag, Modal } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Descriptions,
+  Image,
+  Tabs,
+  Tag,
+  Modal,
+  message,
+} from "antd";
 import { EditOutlined, HomeOutlined, StarFilled } from "@ant-design/icons";
 import { adminService } from "../../../../services/apiService";
 import { useParams } from "react-router-dom";
@@ -12,14 +21,18 @@ const ProductDetail = () => {
   const [product, setProduct] = useState({});
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [updateSpecsModalVisible, setUpdateSpecsModalVisible] = useState(false);
-
+  const [variantMode, setVariantMode] = useState("create"); // 'create' hoặc 'update'
   const [updateVariantsModalVisible, setUpdateVariantsModalVisible] =
     useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
 
-  const handleOpenUpdateVariantModal = (variant) => {
-    setSelectedVariant(variant); // Cập nhật state trước
+  const handleOpenVariantModal = (mode, variant = null) => {
+    setVariantMode(mode);
+    setSelectedVariant(variant);
+    console.log("variants: ",variant);
+    setUpdateVariantsModalVisible(true);
   };
+
   useEffect(() => {
     if (selectedVariant) {
       setUpdateVariantsModalVisible(true); // Mở modal sau khi state đã có giá trị
@@ -40,21 +53,28 @@ const ProductDetail = () => {
   };
   const handleUpdateSpecifications = async (specifications) => {
     try {
-      console.log(specifications);
       const response = adminService.updateSpecifications(
         productId,
         specifications
       );
-      console.log(response.data);
-      toast.success("Specifications updated successfully");
+      message.success("Specifications updated successfully");
       fetchProduct();
       setUpdateSpecsModalVisible(false);
     } catch (error) {
       console.error("Failed to update specifications:", error);
-      toast.error("Failed to update specifications");
+      message.error("Failed to update specifications");
     }
   };
-
+  const handleDeleteVariant = async (variantId) => {
+    try {
+      await adminService.deleteVariant(variantId);
+      message.success("Variant deleted successfully");
+      fetchProduct();
+    } catch (error) {
+      console.error("Failed to delete variant:", error);
+      message.error("Failed to delete variant");
+    }
+  }
   useEffect(() => {
     fetchProduct();
   }, []);
@@ -77,20 +97,20 @@ const ProductDetail = () => {
             ),
           },
           {
-            title: product.productId?.name,
+            title: product?.name,
           },
         ]}
       />
 
       <div className="p-6 bg-white rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-4">{productId.name}</h1>
+        <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
 
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane tab="Basic Info" key="1">
             <div className="flex flex-wrap">
               <div className="w-full md:w-1/2 pr-4">
                 <Image.PreviewGroup>
-                  {product.productId?.images.map((img, index) => (
+                  {product?.images?.map((img, index) => (
                     <Image
                       key={index}
                       width={200}
@@ -103,26 +123,25 @@ const ProductDetail = () => {
               <div className="w-full md:w-1/2">
                 <Descriptions column={1}>
                   <Descriptions.Item label="Category">
-                    {product.productId?.category.name}
+                    {product?.category?.name}
                   </Descriptions.Item>
                   <Descriptions.Item label="Brand">
-                    {product.productId?.brand.name}
+                    {product?.brand?.name}
                   </Descriptions.Item>
                   <Descriptions.Item label="Rating">
-                    <StarFilled className="text-yellow-400" />{" "}
-                    {productId.rating}
+                    <StarFilled className="text-yellow-400" /> {product.rating}
                   </Descriptions.Item>
                   <Descriptions.Item label="Sold">
-                    {product.productId?.sold}
+                    {product?.sold}
                   </Descriptions.Item>
                   <Descriptions.Item label="Status">
-                    <Tag color={productId.status ? "green" : "red"}>
-                      {product.productId?.status ? "Active" : "Inactive"}
+                    <Tag color={product.status ? "green" : "red"}>
+                      {product?.status ? "Active" : "Inactive"}
                     </Tag>
                   </Descriptions.Item>
                   <Descriptions.Item label="Stock">
-                    <Tag color={productId.isStock ? "green" : "red"}>
-                      {product.productId?.isStock ? "In Stock" : "Out of Stock"}
+                    <Tag color={product.isStock ? "green" : "red"}>
+                      {product?.isStock ? "In Stock" : "Out of Stock"}
                     </Tag>
                   </Descriptions.Item>
                 </Descriptions>
@@ -130,7 +149,7 @@ const ProductDetail = () => {
             </div>
             <div className="mt-4">
               <h3 className="text-lg font-semibold mb-2">Description</h3>
-              <p>{product.productId?.description}</p>
+              <p>{product?.description}</p>
             </div>
             <div className="mt-9 absolute right-[-20px] py-2">
               <Button
@@ -145,26 +164,22 @@ const ProductDetail = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane tab="Specifications" key="2">
-            {product.specifications?.length > 0 ? (
-              product.specifications.map((spec, index) => (
-                <div key={index} className="mb-4">
-                  <h3 className="text-lg font-semibold mb-2">
-                    {spec.category}
-                  </h3>
-                  <Descriptions column={1} bordered size="small">
-                    {spec.details.map((detail, detailIndex) => (
-                      <Descriptions.Item key={detailIndex} label={detail.key}>
-                        {detail.value}
-                      </Descriptions.Item>
-                    ))}
-                  </Descriptions>
-                </div>
-              ))
-            ) : (
-              <div>
-                <Button>Tạo mới</Button>
-              </div>
-            )}
+            {product.specifications?.length > 0
+              ? product.specifications.map((spec, index) => (
+                  <div key={index} className="mb-4">
+                    <h3 className="text-lg font-semibold mb-2">
+                      {spec.category}
+                    </h3>
+                    <Descriptions column={1} bordered size="small">
+                      {spec.details.map((detail, detailIndex) => (
+                        <Descriptions.Item key={detailIndex} label={detail.key}>
+                          {detail.value}
+                        </Descriptions.Item>
+                      ))}
+                    </Descriptions>
+                  </div>
+                ))
+              : null}
             <div className="mt-9 absolute right-[-20px] py-2">
               <Button
                 type="default"
@@ -172,7 +187,7 @@ const ProductDetail = () => {
                 icon={<EditOutlined />}
                 onClick={() => setUpdateSpecsModalVisible(true)}
               >
-                Update
+                Edit
               </Button>
             </div>
           </Tabs.TabPane>
@@ -181,9 +196,21 @@ const ProductDetail = () => {
             {product.variants?.length > 0 ? (
               product.variants.map((variant, index) => (
                 <div key={index} className="mb-4">
-                  <h3 className="text-lg font-semibold mb-2">
-                    {variant.memory}
-                  </h3>
+                  <div className="text-lg font-semibold mb-2 flex justify-between items-center">
+                    <div>{variant.memory !=="null" ? variant.memory : null}</div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() =>
+                          handleOpenVariantModal("update", variant)
+                        }
+                      >
+                        Update
+                      </Button>
+                      <Button danger onClick={() =>handleDeleteVariant(variant._id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -197,7 +224,7 @@ const ProductDetail = () => {
                           Discount Price
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
+                          Quantity
                         </th>
                       </tr>
                     </thead>
@@ -214,17 +241,7 @@ const ProductDetail = () => {
                             {formatCurrency(v.price.discount)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <Button
-                              type="link"
-                              onClick={() =>
-                                handleOpenUpdateVariantModal({
-                                  ...v,
-                                  memory: variant.memory,
-                                })
-                              }
-                            >
-                              Update
-                            </Button>
+                            {v.stockQuantity}
                           </td>
                         </tr>
                       ))}
@@ -233,10 +250,16 @@ const ProductDetail = () => {
                 </div>
               ))
             ) : (
-              <div>
-                <Button>Tạo mới</Button>
-              </div>
+              <p>No variants available.</p>
             )}
+            <div className="mt-9 absolute right-[-20px] py-2">
+              <Button
+                type="primary"
+                onClick={() => handleOpenVariantModal("create")}
+              >
+                Add Variant
+              </Button>
+            </div>
           </Tabs.TabPane>
         </Tabs>
       </div>
@@ -255,17 +278,14 @@ const ProductDetail = () => {
       />
       <UpdateVariantsModal
         visible={updateVariantsModalVisible}
-        onCancel={() => {
-          setUpdateVariantsModalVisible(false);
-          setSelectedVariant(null);
-        }}
+        onCancel={() => setUpdateVariantsModalVisible(false)}
         onUpdate={fetchProduct}
-        variant={selectedVariant}
+        mode={variantMode}
+        variants={selectedVariant ? selectedVariant.variants : []}
+        memory={variantMode === "update" ? selectedVariant.memory : null}
         productId={productId}
       />
     </>
   );
 };
 export default ProductDetail;
-
-

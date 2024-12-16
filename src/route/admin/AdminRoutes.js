@@ -13,6 +13,10 @@ import AdminStaffs from "../../pages/admin/user/AdminStaffs";
 import AdminReviews from "../../pages/admin/review/AdminReview";
 import ProductOnSales from "../../pages/admin/product/POS/ProductOnSales";
 import Statistics from "../../pages/admin/statistic/Statistic";
+import FilterAdmin from "../../pages/admin/filter/AdminFilter";
+import Wishlist from "../../pages/client/Wishlist/Wishlist";
+import AdminBanner from "../../pages/admin/banner/AdminBanner";
+import AdminOrderDetails from "../../pages/admin/order/OrderDetail";
 
 const AdminRoutes = memo(()=>{
     const routes = [
@@ -43,6 +47,10 @@ const AdminRoutes = memo(()=>{
                     element: <AdminOrders />,
                 },
                 {
+                    path: 'orders/:orderId',
+                    element: <AdminOrderDetails />,
+                },
+                {
                     path: 'users',
                     element: <AdminUsers />,
                 },
@@ -70,6 +78,14 @@ const AdminRoutes = memo(()=>{
                     path: 'staffs',
                     element: <AdminStaffs/>,
                 },
+                {
+                    path: 'filters',
+                    element: <FilterAdmin/>,
+                },
+                {
+                    path: 'banners',
+                    element: <AdminBanner />,
+                }
             ]
         },
     ];

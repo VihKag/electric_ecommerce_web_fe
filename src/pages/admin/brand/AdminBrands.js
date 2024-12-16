@@ -38,7 +38,13 @@ const AdminBrands = () => {
   const [form] = Form.useForm();
   const [editingBrand, setEditingBrand] = useState(null);
 
-  const fetchBrands = async () => {
+  const fetchBrands = async (
+    page = pagination.current,
+    pageSize = pagination.pageSize,
+    sortField = "createdAt",
+    sortOrder = "asc",
+    search = ""
+  ) => {
     setLoading(true);
     try {
       const response = await adminService.getBrands({
@@ -55,13 +61,11 @@ const AdminBrands = () => {
       setTotal(response.data.data.totalBrands);
       setLoading(false);
     } catch (error) {
-      toast.error("Failed to fetch employees");
+      message.error("Failed to fetch employees");
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchBrands();
-  }, [pagination, sortField, sortOrder, searchText]);
+
 
   const handleTableChange = (pagination, filters, sorter) => {
     setPagination(pagination);
@@ -124,36 +128,6 @@ const AdminBrands = () => {
     },
   ];
 
-  const handleAdd = ()=> {
-    form.setFieldsValue();
-    setIsModalVisible(true);
-  };
-
-  const handleEdit = (brand) => {
-    setEditingBrand(brand);
-    console.log("brand", brand);
-    form.setFieldsValue({
-      name: brand.name,
-      status: brand.status,
-    });
-    setIsModalVisible(true);
-  };
-
-  const handleDelete = (id) => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this brand?",
-      onOk: async () => {
-        try {
-          brandService.deleteBrandById(id);
-          setBrands(brands.filter((brand) => brand._id !== id));
-          toast.success("Category deleted successfully");
-        } catch (error) {
-          console.log(error);
-          toast.error("Xóa thất bại");
-        }
-      }
-    });
-  };
 
   const handleModalOk = () => {
     form.validateFields().then(async (values) => {
@@ -184,18 +158,18 @@ const AdminBrands = () => {
         }
 
         if (response.data.success) {
-          toast.success(response.data.message);
+          message.success(response.data.message);
           setIsModalVisible(false);
           form.resetFields();
           setEditingBrand(null);
           setImageFile(null);
           fetchBrands(); // Reload lại danh sách
         } else {
-          toast.error(response.data.message || "Failed to save brand");
+          message.error(response.data.message || "Failed to save brand");
         }
       } catch (error) {
         console.error("Failed to save brand:", error);
-        toast.error("Failed to save brand");
+        message.error("Failed to save brand");
       }
     });
   };
@@ -211,7 +185,45 @@ const AdminBrands = () => {
     console.log("Selected files:", info.fileList); // Kiểm tra danh sách file
     setImageFile(info.fileList); // Lưu toàn bộ danh sách file vào state
   };
+  const handleSearch = (searchText) => {
+    setSearchText(searchText);
+    setPagination({...pagination, current: 1 });
+  };
 
+  const handleAdd = ()=> {
+    form.setFieldsValue();
+    setIsModalVisible(true);
+  };
+
+  const handleEdit = (brand) => {
+    setEditingBrand(brand);
+    console.log("brand", brand);
+    form.setFieldsValue({
+      name: brand.name,
+      status: brand.status,
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this brand?",
+      onOk: async () => {
+        try {
+          brandService.deleteBrandById(id);
+          setBrands(brands.filter((brand) => brand._id !== id));
+          message.success("Category deleted successfully");
+        } catch (error) {
+          console.log(error);
+          message.error("Xóa thất bại");
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchBrands();
+  }, [pagination]);
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
@@ -229,6 +241,7 @@ const AdminBrands = () => {
         prefix={<SearchOutlined />}
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
+        onPressEnter={(e)=> handleSearch(e.target.value)}
         className="mb-4"
         style={{ width: 200 }}
       />
@@ -246,6 +259,7 @@ const AdminBrands = () => {
         }}
         loading={loading}
         onChange={handleTableChange}
+        scroll={{ x: 1200 }}
       />
       <Modal
         title={editingBrand ? "Edit Category" : "Add New Category"}

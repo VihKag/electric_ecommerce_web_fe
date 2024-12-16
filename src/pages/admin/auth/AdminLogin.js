@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { LoginAsync } from "../../../redux/slices/adminSlice";
+import { message } from "antd";
 function AdminLogin() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors }} = useForm({
@@ -28,7 +29,7 @@ function AdminLogin() {
     .unwrap() //  to extract the payload of a fulfilled action or to throw either the error
     .then((result)=>{
       if(result.status===200){
-        toast.success("Đăng nhập thành công!");
+        message.success("Đăng nhập thành công!");
         const user = JSON.parse(sessionStorage.getItem("user"));
         console.log(user);
         navigate('/admin');
@@ -37,11 +38,11 @@ function AdminLogin() {
     .catch((error) => {
       // error contains the payload from the rejected action
       if (error.status === 404) {
-        toast.error("Tài khoản không tồn tại");
+        message.error("Tài khoản không tồn tại");
       } else if (error.status === 401) {
-        toast.error("Sai mật khẩu");
+        message.error("Sai mật khẩu");
       } else {
-        toast.error("Đăng nhập thất bại");
+        message.error("Đăng nhập thất bại");
       }
       console.log(error);
     });

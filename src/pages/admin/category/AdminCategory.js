@@ -33,19 +33,10 @@ const AdminCategories = () => {
   const [form] = Form.useForm();
   const [editingCategory, setEditingCategory] = useState(null);
   const [imageFile, setImageFile] = useState([]);
-
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
   });
-
-  const handleTableChange = (pagination, filters, sorter) => {
-    setPagination(pagination);
-    if (sorter && "field" in sorter && "order" in sorter) {
-      setSortField(sorter.field);
-      setSortOrder(sorter.order === "descend" ? "desc" : "asc");
-    }
-  };
 
   const columns = [
     {
@@ -104,7 +95,13 @@ const AdminCategories = () => {
     },
   ];
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (
+    page = 1,
+    pageSize = 10,
+    sortField = "createdAt",
+    sortOrder = "asc",
+    search = ""
+  ) => {
     setLoading(true);
     try {
       const response = await adminService.getCategories({
@@ -139,10 +136,14 @@ const AdminCategories = () => {
     });
     setIsModalVisible(true);
   };
+  const handleTableChange = (pagination, filters, sorter) => {
+    setPagination(pagination);
+    if (sorter && "field" in sorter && "order" in sorter) {
+      setSortField(sorter.field);
+      setSortOrder(sorter.order === "descend" ? "desc" : "asc");
+    }
+  };
 
-  useEffect(() => {
-    fetchCategories();
-  }, [pagination, sortField, sortOrder, searchText, categories]);
 
   const handleDelete = (id) => {
     Modal.confirm({
@@ -150,13 +151,13 @@ const AdminCategories = () => {
       onOk: async () => {
         try {
           categoryService.deleteCategoryById(id);
-          toast.success("Xóa thành công");
+          message.success("Xóa thành công");
           setCategories((prevCategories) =>
             prevCategories.filter((category) => category._id !== id)
           );
         } catch (error) {
           console.log(error);
-          toast.error("Xóa thất bại");
+          message.error("Xóa thất bại");
         }
       },
     });
@@ -190,18 +191,18 @@ const AdminCategories = () => {
         }
 
         if (response.data.success) {
-          toast.success(response.data.message);
+          message.success(response.data.message);
           setIsModalVisible(false);
           form.resetFields();
           setEditingCategory(null);
           setImageFile(null);
           fetchCategories(); // Reload lại danh sách
         } else {
-          toast.error(response.data.message || "Failed to save category");
+          message.error(response.data.message || "Failed to save category");
         }
       } catch (error) {
         console.error("Failed to save category:", error);
-        toast.error("Failed to save category");
+        message.error("Failed to save category");
       }
     });
   };
@@ -217,7 +218,19 @@ const AdminCategories = () => {
     console.log("Selected files:", info.fileList); // Kiểm tra danh sách file
     setImageFile(info.fileList); // Lưu toàn bộ danh sách file vào state
   };
-
+  const handleSearch = (search) => {
+    setPagination({...pagination, current: 1 }); // Reset page number
+    fetchCategories(
+      1,
+      pagination.pageSize,
+      sortField,
+      sortOrder,
+      search
+    );
+  }
+  useEffect(() => {
+    fetchCategories();
+  }, [pagination]);
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
@@ -236,6 +249,7 @@ const AdminCategories = () => {
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         className="mb-4"
+        onPressEnter={(e)=>handleSearch(e.target.value)}
         style={{ width: 200 }}
       />
       <Table
@@ -252,6 +266,7 @@ const AdminCategories = () => {
         }}
         loading={loading}
         onChange={handleTableChange}
+        scroll={{ x: 1200 }}
       />
       <Modal
         title={editingCategory ? "Edit Category" : "Add New Category"}
