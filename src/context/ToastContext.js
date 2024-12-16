@@ -8,7 +8,7 @@ export const ToastProvider = ({ children }) => {
 
   const showToast = (message) => {
     if (!toastShown) {
-      toast.success(message);
+      message.success(message);
       setToastShown(true);
     }
   };
