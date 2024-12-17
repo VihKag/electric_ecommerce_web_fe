@@ -39,9 +39,6 @@ export default function UserDashboard() {
           <Menu.Item key="address" icon={<EnvironmentOutlined />}>
             <Link to="/user/addresses">Sổ địa chỉ</Link>
           </Menu.Item>
-          <Menu.Item key="bill" icon={<QuestionCircleOutlined />}>
-            <Link to="/user/bills">Hóa đơn</Link>
-          </Menu.Item>
           <Menu.Item key="logout" onClick={handleLogout} icon={<LogoutOutlined />}>
             Đăng xuất
           </Menu.Item>

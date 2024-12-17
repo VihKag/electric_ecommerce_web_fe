@@ -262,7 +262,7 @@ const ProductPage = () => {
                   {variants?.length > 0
                     ? variants.map(
                         (variant, index) =>
-                          variant.memory ? ( // Kiểm tra nếu variant.memory tồn tại
+                          variant.memory !=="null" ? ( // Kiểm tra nếu variant.memory tồn tại
                             <button
                               key={index}
                               className={`px-4 py-1 border rounded font-medium ${

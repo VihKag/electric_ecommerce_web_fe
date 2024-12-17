@@ -8,7 +8,6 @@ import ShoppingCart from "../../pages/client/cart/ShoppingCart";
 import UserDashboard from "../../pages/client/user/UserDashboard";
 import UserProfile from "../../pages/client/user/profile/UserProfile";
 import Order from "../../pages/client/user/orders/Orders";
-import OrderDetails from "../../pages/client/user/orders/order_details/OrderDetail";
 import Contact from "../../pages/client/contact/Contact";
 import Login from "../../pages/auth/Login";
 import Register from "../../pages/auth/Register";
@@ -18,7 +17,6 @@ import SearchResultPage from "../../pages/client/product/SearchResultPage";
 import ChangePassword from "../../pages/auth/ChangePassword";
 import FooterContent from "../../components/footer/FooterContent";
 import AddressList from "../../pages/client/user/address/UserAddresses";
-import HelpPage from "../../pages/client/user/help/Help";
 import Checkout from "../../pages/client/checkout/Checkout";
 import OrderSuccess from "../../pages/client/Order/OrderFailure";
 import FailedOrderPage from "../../pages/client/Order/OrderFailure";
@@ -110,10 +108,6 @@ const ClientRoutes = memo(() => {
             {
               path: "orders",
               element: <Order />,
-            },
-            {
-              path: "order/:orderId",
-              element: <OrderDetails />,
             },
             {
               path: "addresses",
