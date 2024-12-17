@@ -110,6 +110,7 @@ export const commonService = {
     updateAddress: (data) => api.put('/address', data),
     likeProduct: (data) => api.put('/favourites', data),
     getFavouriteProduct: (userId) => api.get(`/favourites/products/${userId}`),
+    getRevenue: (config) => api.get(`/orders/statistic`,config),
 }
 
 

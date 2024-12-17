@@ -12,6 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import { adminService } from "../../../services/apiService";
+import Revenue from "../../../components/Revenue";
 
 // Đảm bảo các phần của Chart.js được đăng ký
 ChartJS.register(
@@ -86,7 +87,7 @@ const Statistics = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       {/* Thống kê tổng quát */}
       <Row gutter={16}>
         <Col span={8}>
@@ -114,7 +115,7 @@ const Statistics = () => {
         <Col span={8}>
           <Card className="shadow-lg rounded-lg">
             <Statistic
-              title="Total Revenue"
+              title="Order Value"
               value={statistics.orderStatistics.reduce(
                 (sum, status) => sum + status.totalAmount,
                 0
@@ -124,7 +125,9 @@ const Statistics = () => {
           </Card>
         </Col>
       </Row>
-
+      <div className="mt-6 shadow-md">
+        <Revenue/>
+      </div>
       <div className="grid grid-cols-2 gap-2">
         {/* Biểu đồ trạng thái đơn hàng */}
         <Card
