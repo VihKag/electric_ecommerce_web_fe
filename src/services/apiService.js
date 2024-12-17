@@ -11,8 +11,6 @@ const api = axios.create(
     }
 )
 
-
-
 export const employeeServiceApi = axios.create({
     baseURL: "https://techzone-2ow9.onrender.com",
     headers: {
