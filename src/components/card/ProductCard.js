@@ -44,7 +44,8 @@ function ProductCard({ product }) {
     navigate(`/product/${product._id}`);
   };
 
-  const handleLikeClick = async(productId) => {
+  const handleLikeClick = async(event,productId) => {
+    event.stopPropagation(); // Stop event propagation
     try {
       if(!user){
         message.info("Vui lòng đăng nhập!");
@@ -113,9 +114,8 @@ function ProductCard({ product }) {
           <div
             className="flex items-center gap-1 hover:animate-blink z-40"
             onClick={(event) => {
-              event.stopPropagation();
               console.log("test like");
-              handleLikeClick(product._id);
+              handleLikeClick(event, product._id);
             }}
           >
             <div className="font-semibold min-w-fit text-secondary">
