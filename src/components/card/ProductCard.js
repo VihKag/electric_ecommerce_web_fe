@@ -48,7 +48,6 @@ function ProductCard({ product }) {
     try {
       if(!user){
         message.info("Vui lòng đăng nhập!");
-        return;
       }
       const payload = { 
         userId: user.id, 
@@ -62,7 +61,6 @@ function ProductCard({ product }) {
       }
     } catch (error) {
       console.log(error);
-      return;
     }
   }
 
