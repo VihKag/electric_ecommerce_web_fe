@@ -106,7 +106,8 @@ const AddressList = () => {
           }
         } catch (error) {
           if (error.response) {
-            message.error(error.response.data.message || "Xóa địa chỉ thất bại!");
+            message.error(error.response.data.message);
+            console.log(error);
           } else if (error.request) {
             message.error("Không thể kết nối đến máy chủ!");
           } else {
