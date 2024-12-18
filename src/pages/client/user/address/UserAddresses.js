@@ -99,7 +99,7 @@ const AddressList = () => {
       cancelText: "Không",
       onOk: async () => {
         try {
-          const response = await commonService.deleteAddress(user.id,addressId);
+          const response = await commonService.deleteAddress(addressId);
           if (response.status === 200) {
             message.success("Địa chỉ đã được xóa thành công!");
             fetchAddresses();
