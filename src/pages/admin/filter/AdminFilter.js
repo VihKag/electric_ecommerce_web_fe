@@ -26,6 +26,7 @@ const FiltersTable = () => {
   const [currentFilter, setCurrentFilter] = useState({});
   const [categories, setCategories] = useState([]);
   const [actions, setActions] = useState(false);
+  const [form] = Form.useForm(); // Tạo instance form
   const columns = [
     {
       title: "Category",
@@ -90,6 +91,7 @@ const FiltersTable = () => {
     setIsDrawerVisible(false);
     setCurrentFilter(null);
     setIsEditMode(false);
+    form.resetFields(); 
   };
 
   const handleAddFilter = () => {

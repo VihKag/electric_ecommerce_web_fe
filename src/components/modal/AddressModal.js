@@ -17,7 +17,7 @@ const AddressModal = ({ form, isModalOpen, handleCancel, handleOk }) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "https://vapi.vnappmob.com/api/province/"
+        "https://vapi.vnappmob.com/api/v2/province/"
       );
       if (response.data && response.data.results) {
         setProvinces(response.data.results);
@@ -38,7 +38,7 @@ const AddressModal = ({ form, isModalOpen, handleCancel, handleOk }) => {
       );
       if (selectedProvince) {
         const response = await axios.get(
-          `https://vapi.vnappmob.com/api/province/district/${selectedProvince.province_id}`
+          `https://vapi.vnappmob.com/api/v2/province/district/${selectedProvince.province_id}`
         );
         setDistricts(response.data.results || []);
       }
@@ -58,7 +58,7 @@ const AddressModal = ({ form, isModalOpen, handleCancel, handleOk }) => {
       );
       if (selectedDistrict) {
         const response = await axios.get(
-          `https://vapi.vnappmob.com/api/province/ward/${selectedDistrict.district_id}`
+          `https://vapi.vnappmob.com/api/v2/province/ward/${selectedDistrict.district_id}`
         );
         setWards(response.data.results || []);
       }
